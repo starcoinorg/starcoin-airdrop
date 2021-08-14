@@ -1,6 +1,9 @@
 import React from 'react'
-import { Box, Button, Grid, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@material-ui/core'
+import { Box, Button, Grid, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination';
+import { useEffect, useState } from 'react';
+import API from '../../api/api'
+// import { useStores } from '../../useStore';
 
 const useStyles = makeStyles((theme) => ({
   paperContent: {
@@ -11,21 +14,45 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function createData(project: string, winner: number, amount: number, startTime: string, endTime: string, status: number) {
-  return {project, winner, amount, startTime, endTime, status}
+interface rlt {
+  data: Object,
+  errno: number,
+  errmsg: string
 }
 
-const rows = [
-  createData('test1', 1, 10, '2021年8月3日', '2021年8月23日', 1),
-  createData('test2', 2, 12, '2021年8月5日', '2021年8月23日', 2),
-  createData('test3', 3, 30, '2021年8月6日', '2021年8月23日', 3),
-  createData('test4', 4, 14, '2021年8月7日', '2021年8月23日', 0),
-  createData('test5', 5, 50, '2021年8月8日', '2021年8月23日', 1),
-]
+interface projectList {
+  Data: any,
+  count: number
+}
+
+const getProjectList = async ():Promise<projectList> => {
+  let rlt:any = await API.getProjectList({
+    status: 'all',
+    token: ''
+  })
+  let resp: projectList = rlt.data
+  return resp
+}
+
 
 const Home: React.FC = () => {
   const classes = useStyles();
-  console.log(rows)
+  const [rows, setRows] = useState([{
+    ExpireTime: '',
+    CreateTime: '',
+    status: 0,
+    Id: 0,
+    Project: '',
+    ValidAmount: 0,
+    TotalAmount: 0,
+  }])
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    (async() => {
+      let data = await getProjectList()
+      setRows(data.Data)
+    })();
+  },[])
   return (
     <div>
       <Paper elevation={3}>
@@ -76,21 +103,21 @@ const Home: React.FC = () => {
           </TableHead>
           <TableBody>
             {rows.map((row) => (
-              <TableRow key={row.project}>
+              <TableRow key={row.Id}>
                 <TableCell>
-                  {row.project}
+                  {row.Project}
                 </TableCell>
                 <TableCell>
-                  {row.winner}
+                  {row.ValidAmount}
                 </TableCell>
                 <TableCell>
-                  {row.amount}
+                  {row.TotalAmount}
                 </TableCell>
                 <TableCell>
-                  {row.startTime}
+                  {row.CreateTime}
                 </TableCell>
                 <TableCell>
-                  {row.endTime}
+                  {row.ExpireTime}
                 </TableCell>
                 <TableCell>
                   { row.status === 0 ? <Button variant="contained" disabled>已过期</Button> : ''}

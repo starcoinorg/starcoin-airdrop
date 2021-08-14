@@ -6,6 +6,8 @@ import Typography from '@material-ui/core/Typography';
 import { Box, Button, MenuItem, Select } from '@material-ui/core';
 import TranslateIcon from '@material-ui/icons/Translate';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { useStores } from '../../useStore'
+import { useEffect, useState } from 'react';
 // import IconButton from '@material-ui/core/IconButton';
 // import MenuIcon from '@material-ui/icons/Menu';
 
@@ -40,6 +42,17 @@ const useStyles = makeStyles((theme) => ({
 
 const Headers: React.FC = () => {
   const classes = useStyles();
+  const [accountStatus, setAccountStatus] = useState(-1)
+  const { AccountStore } = useStores()
+  useEffect(() => {
+    if (window.starcoin.selectedAddress) {
+      setAccountStatus(1)
+    } else if (AccountStore.accountInfo.isInstall) {
+      setAccountStatus(0)
+    } else {
+      setAccountStatus(-1)
+    }
+  })
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -59,7 +72,11 @@ const Headers: React.FC = () => {
             </Select>
           </Box>
           <Box display="flex" alignItems="center">
-            <Button variant="outlined" className={classes.buttonStyle}>Install Wallet</Button>
+            <Button variant="outlined" className={classes.buttonStyle}>
+              {accountStatus === 0 ? 'Connect Wallet':''}
+              {accountStatus === 1 ? window.starcoin.selectedAddress:''}
+              {accountStatus === -1 ? 'Install Wallet':''}
+            </Button>
           </Box>
         </Toolbar>
       </AppBar>

@@ -1,10 +1,14 @@
 import React from "react";
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter, Switch } from 'react-router-dom';
 import routes from '../../router';
 import { RouteWithSubRoutes } from '../../assets/common';
 import { RouteInterface } from '../../assets/interface';
 import Header from "../../components/Header/Header";
 import { makeStyles } from "@material-ui/core";
+import { useStores } from '../../useStore'
+import { useEffect } from "react";
+import StarMaskOnboarding from '@starcoin/starmask-onboarding';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -12,8 +16,26 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+declare global {
+  interface Window {
+    starcoin: any
+  }
+}
+
 const App = () => {
   const classes = useStyles();
+  const { AccountStore } = useStores()
+  useEffect(() => {
+    let newObj:Object = {
+      isInstall: StarMaskOnboarding.isStarMaskInstalled()
+    }
+    if (window.starcoin) {
+      Object.assign(newObj, {
+          accounts: window.starcoin._state.accounts || []
+      })
+    }
+    AccountStore.setAccountInfo(newObj)
+  })
   return (
     <div>
       <Header />
