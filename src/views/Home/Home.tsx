@@ -22,7 +22,7 @@ interface rlt {
 
 interface projectList {
   Data: any,
-  count: number
+  Count: number
 }
 
 const getProjectList = async ():Promise<projectList> => {
@@ -51,6 +51,7 @@ const Home: React.FC = () => {
     (async() => {
       let data = await getProjectList()
       setRows(data.Data)
+      setCount(data.Count)
     })();
   },[])
   return (
@@ -131,7 +132,7 @@ const Home: React.FC = () => {
         </Table>
       </TableContainer>
       <Grid container justifyContent="flex-end">
-        <Pagination count={10} /> 
+        <Pagination count={count/10 + 1} /> 
       </Grid>
     </div>
   )
