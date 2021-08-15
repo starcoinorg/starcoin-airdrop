@@ -2,5 +2,5 @@ import { createContext } from "react";
 import AccountStore from "./account";
 
 export const rootStoreContext = createContext({
-  AccountStore: new AccountStore()
+  AccountStore: AccountStore
 });

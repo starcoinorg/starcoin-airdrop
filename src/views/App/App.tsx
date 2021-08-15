@@ -26,15 +26,7 @@ const App = () => {
   const classes = useStyles();
   const { AccountStore } = useStores()
   useEffect(() => {
-    let newObj:Object = {
-      isInstall: StarMaskOnboarding.isStarMaskInstalled()
-    }
-    if (window.starcoin) {
-      Object.assign(newObj, {
-          accounts: window.starcoin._state.accounts || []
-      })
-    }
-    AccountStore.setAccountInfo(newObj)
+    AccountStore.setIsInstall(StarMaskOnboarding.isStarMaskInstalled())
   })
   return (
     <div>

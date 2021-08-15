@@ -3,7 +3,7 @@ import { Box, Button, Grid, makeStyles, Paper, Table, TableBody, TableCell, Tabl
 import Pagination from '@material-ui/lab/Pagination';
 import { useEffect, useState } from 'react';
 import API from '../../api/api'
-// import { useStores } from '../../useStore';
+//import { useStores } from '../../useStore';
 
 const useStyles = makeStyles((theme) => ({
   paperContent: {
@@ -14,19 +14,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-interface rlt {
-  data: Object,
-  errno: number,
-  errmsg: string
-}
-
 interface projectList {
   Data: any,
   Count: number
 }
 
 const getProjectList = async ():Promise<projectList> => {
-  let rlt:any = await API.getProjectList({
+  let rlt:any =  await API.getProjectList({
     status: 'all',
     token: ''
   })

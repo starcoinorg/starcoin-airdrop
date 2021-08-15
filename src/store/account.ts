@@ -1,16 +1,25 @@
-import { observable, action } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 
-export default class AccountStore {
-  @observable accountInfo = {
-    isInstall: false,
-    accountList: [],
-    currentAccoutn: ''
+class AccountStore {
+  isInstall: boolean =  false
+  accountList: any = []
+  currentAccount: string = ''
+
+  constructor() {
+    makeAutoObservable(this, {}, {autoBind: true})
   }
 
-  @action
-  setAccountInfo = (v: any) => {
-    let originData = this.accountInfo
-    let newData = Object.assign(originData, v)
-    this.accountInfo = newData
+  setIsInstall = (v: boolean) => {
+    this.isInstall = v
+  }
+  setAccountList = (v: any) => {
+    this.accountList = v
+  }
+  setCurrentAccount = (v: string) => {
+    this.currentAccount = v
   }
 }
+
+export default new AccountStore()
+
+

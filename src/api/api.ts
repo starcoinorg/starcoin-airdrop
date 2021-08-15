@@ -1,11 +1,4 @@
-import { AxiosResponse } from 'axios'
 import Server from './server'
-
-interface rlt {
-  data: Object,
-  errno: number,
-  errmsg: string
-}
 
 class API extends Server {
   async getProjectList(params = {}):Promise<any> {

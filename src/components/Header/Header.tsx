@@ -8,6 +8,7 @@ import TranslateIcon from '@material-ui/icons/Translate';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useStores } from '../../useStore'
 import { useEffect, useState } from 'react';
+import StarMaskOnboarding from '@starcoin/starmask-onboarding';
 // import IconButton from '@material-ui/core/IconButton';
 // import MenuIcon from '@material-ui/icons/Menu';
 
@@ -45,14 +46,24 @@ const Headers: React.FC = () => {
   const [accountStatus, setAccountStatus] = useState(-1)
   const { AccountStore } = useStores()
   useEffect(() => {
+    console.log(AccountStore.isInstall)
     if (window.starcoin.selectedAddress) {
       setAccountStatus(1)
-    } else if (AccountStore.accountInfo.isInstall) {
+    } else if (StarMaskOnboarding.isStarMaskInstalled()) {
       setAccountStatus(0)
     } else {
       setAccountStatus(-1)
     }
   })
+  function connectWallet() {
+    if(accountStatus === 2) {
+      window.starcoin.request({
+        method: 'stc_requestAccounts',
+      }).then((res: any) => {
+        console.log(res)
+      })
+    }
+  }
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -72,7 +83,7 @@ const Headers: React.FC = () => {
             </Select>
           </Box>
           <Box display="flex" alignItems="center">
-            <Button variant="outlined" className={classes.buttonStyle}>
+            <Button variant="outlined" className={classes.buttonStyle} onClick={connectWallet}>
               {accountStatus === 0 ? 'Connect Wallet':''}
               {accountStatus === 1 ? window.starcoin.selectedAddress:''}
               {accountStatus === -1 ? 'Install Wallet':''}
