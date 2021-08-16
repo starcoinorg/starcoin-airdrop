@@ -56,7 +56,7 @@ const Headers: React.FC = () => {
     } else {
       setAccountStatus(-1)
     }
-  },[AccountStore.isInstall])
+  },[AccountStore.isInstall, AccountStore.accountList])
   useEffect(() => {
     if (window.starcoin && window.starcoin._state.accounts.length > 0) {
       setAccountAddress(window.starcoin._state.accounts[0])
@@ -74,7 +74,7 @@ const Headers: React.FC = () => {
           AccountStore.setCurrentAccount(res[0] || '')
         }
       })
-    } else if (accountStatus == -1) {
+    } else if (accountStatus === -1) {
       window.open("https://chrome.google.com/webstore/detail/starmask/mfhbebgoclkghebffdldpobeajmbecfk")
     }
   }
@@ -100,7 +100,7 @@ const Headers: React.FC = () => {
           <Box display="flex" alignItems="center">
             <Button variant="outlined" className={classes.buttonStyle} onClick={connectWallet}>
               {accountStatus === 0 ? 'Connect Wallet':''}
-              {accountStatus === 1 ? `${window.starcoin.selectedAddress.substr(0,4) + '....' + window.starcoin.selectedAddress.substring(window.starcoin.selectedAddress.length - 4)}`:''}
+              {accountStatus === 1 ? `${accountAddress.substr(0,4) + '....' + window.starcoin.selectedAddress.substring(window.starcoin.selectedAddress.length - 4)}`:''}
               {accountStatus === -1 ? 'Install Wallet':''}
             </Button>
           </Box>

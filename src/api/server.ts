@@ -15,7 +15,7 @@ import axios from 'axios'
  */
 
 export default class Server {
-  axios(method:string, url:string, params:any) {
+  axios(method:string, url:string, params:any, headers={}) {
     return new Promise((resolve, reject) => {
       if (typeof params !== 'object') params = {}
       let _option = params
@@ -25,7 +25,7 @@ export default class Server {
         timeout: 30000,
         params: params,
         data: params,
-        headers: null,
+        headers: headers,
         // crossDomain: true,
         // withCredentials: true, //是否携带cookies发起请求
       }

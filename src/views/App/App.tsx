@@ -8,6 +8,7 @@ import { makeStyles } from "@material-ui/core";
 import { useStores } from '../../useStore'
 import { useEffect } from "react";
 import StarMaskOnboarding from '@starcoin/starmask-onboarding';
+import { observer } from "mobx-react";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -45,4 +46,4 @@ const App = () => {
   )
 }
 
-export default App
+export default observer(App)

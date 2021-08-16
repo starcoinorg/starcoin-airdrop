@@ -42,14 +42,14 @@ const Home: React.FC = () => {
     TotalAmount: 0,
   }])
   const [count, setCount] = useState(0)
-  const [as, setAs] = useState()
+  // const [as, setAs] = useState()
   let starcoinProvider: any
   useEffect(() => {
     try {
       if (window.starcoin) {
         console.log(1)
         starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
-        setAs(starcoinProvider)
+        // setAs(starcoinProvider)
       }
     } catch (err) {
       console.log(err)
