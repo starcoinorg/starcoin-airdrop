@@ -44,7 +44,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     (async() => {
       let data = await getProjectList()
-      setRows(data.Data)
+      setRows(data.Data || [])
       setCount(data.Count)
     })();
   },[])
@@ -97,7 +97,7 @@ const Home: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {rows.length ? rows.map((row) => (
               <TableRow key={row.Id}>
                 <TableCell>
                   {row.Project}
@@ -121,7 +121,7 @@ const Home: React.FC = () => {
                   { row.status === 3 ? <Button variant="contained" disabled>已领完</Button> : ''}
                 </TableCell>
               </TableRow>
-            ))}
+            )):''}
           </TableBody>
         </Table>
       </TableContainer>

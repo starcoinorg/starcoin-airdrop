@@ -45,16 +45,16 @@ const Headers: React.FC = () => {
   const classes = useStyles();
   const [accountStatus, setAccountStatus] = useState(-1)
   const { AccountStore } = useStores()
+  console.log('===>', AccountStore)
   useEffect(() => {
-    console.log(AccountStore.isInstall)
     if (window.starcoin.selectedAddress) {
       setAccountStatus(1)
-    } else if (StarMaskOnboarding.isStarMaskInstalled()) {
+    } else if (AccountStore.isInstall) {
       setAccountStatus(0)
     } else {
       setAccountStatus(-1)
     }
-  })
+  },[AccountStore])
   function connectWallet() {
     if(accountStatus === 2) {
       window.starcoin.request({
