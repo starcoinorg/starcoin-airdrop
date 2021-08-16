@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Button, Grid, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core'
+import { Box, Button, ButtonGroup, Grid, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination';
 import { useEffect, useState } from 'react';
 import API from '../../api/api'
@@ -22,7 +22,7 @@ interface projectList {
 const getProjectList = async ():Promise<projectList> => {
   let rlt:any =  await API.getProjectList({
     status: 'all',
-    token: window.starcoin.selectedAddress || ''
+    token: window.starcoin ? window.starcoin.selectedAddress || '' : ""
   })
   let resp: projectList = rlt.data
   return resp
@@ -50,7 +50,15 @@ const Home: React.FC = () => {
   },[])
   return (
     <div>
-      <Paper elevation={3}>
+      <Box display="flex" justifyContent="space-between">
+        <Typography  variant="h6" align="left"> 空投列表 </Typography>
+        <ButtonGroup color="primary" aria-label="outlined primary button group">
+          <Button>全部</Button>
+          <Button>进行中</Button>
+          <Button>已经结束</Button>
+        </ButtonGroup>
+      </Box>
+      {/* <Paper elevation={3}>
         <Grid justifyContent="center" container spacing={3} className={classes.paperContent}>
           <Grid item xs={4}>
             <Box>
@@ -83,7 +91,7 @@ const Home: React.FC = () => {
             </Box>
           </Grid>
         </Grid>
-      </Paper>
+      </Paper> */}
       <TableContainer component={Paper} className={classes.tableContent}>
         <Table>
           <TableHead>

@@ -46,9 +46,10 @@ const useStyles = makeStyles((theme) => ({
 const Headers: React.FC = () => {
   const classes = useStyles();
   const [accountStatus, setAccountStatus] = useState(-1)
+  const [accountAddress, setAccountAddress] = useState('')
   const { AccountStore } = useStores()
   useEffect(() => {
-    if (window.starcoin.selectedAddress) {
+    if (window.starcoin && window.starcoin.selectedAddress) {
       setAccountStatus(1)
     } else if (AccountStore.isInstall) {
       setAccountStatus(0)
@@ -56,13 +57,25 @@ const Headers: React.FC = () => {
       setAccountStatus(-1)
     }
   },[AccountStore.isInstall])
+  useEffect(() => {
+    if (window.starcoin && window.starcoin._state.accounts.length > 0) {
+      setAccountAddress(window.starcoin._state.accounts[0])
+    } 
+  },[])
   function connectWallet() {
-    if(accountStatus === 2) {
+    if(accountStatus === 0) {
       window.starcoin.request({
         method: 'stc_requestAccounts',
       }).then((res: any) => {
         console.log(res)
+        if(res.length > 0) {
+          setAccountStatus(1)
+          setAccountAddress(res[0] || '')
+          AccountStore.setCurrentAccount(res[0] || '')
+        }
       })
+    } else if (accountStatus == -1) {
+      window.open("https://chrome.google.com/webstore/detail/starmask/mfhbebgoclkghebffdldpobeajmbecfk")
     }
   }
 
