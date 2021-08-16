@@ -3,6 +3,7 @@ import { Box, Button, ButtonGroup, Grid, makeStyles, Paper, Table, TableBody, Ta
 import Pagination from '@material-ui/lab/Pagination';
 import { useEffect, useState } from 'react';
 import API from '../../api/api'
+import { providers} from '@starcoin/starcoin'
 //import { useStores } from '../../useStore';
 
 const useStyles = makeStyles((theme) => ({
@@ -41,6 +42,19 @@ const Home: React.FC = () => {
     TotalAmount: 0,
   }])
   const [count, setCount] = useState(0)
+  const [as, setAs] = useState()
+  let starcoinProvider: any
+  useEffect(() => {
+    try {
+      if (window.starcoin) {
+        console.log(1)
+        starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
+        setAs(starcoinProvider)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  },[])
   useEffect(() => {
     (async() => {
       let data = await getProjectList()
@@ -48,6 +62,20 @@ const Home: React.FC = () => {
       setCount(data.Count)
     })();
   },[])
+  async function clickSendSTC() {
+    let account = window.starcoin._state.accounts[0] || ''
+    let transAmount = 1000000
+    let amount = `0x${transAmount.toString(16)}`
+    let txParams = {
+      to: account,
+      value: amount,
+      gasLimit: 127845,
+      gasPrice: 1,
+    }
+    starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
+    const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
+    console.log(transactionHash)
+  }
   return (
     <div>
       <Box display="flex" justifyContent="space-between">
@@ -124,7 +152,7 @@ const Home: React.FC = () => {
                 </TableCell>
                 <TableCell>
                   { row.status === 2 ? <Button variant="contained" disabled>已过期</Button> : ''}
-                  { row.status === 3 ? <Button variant="contained" color="primary">领取空投</Button> : ''}
+                  { row.status === 3 ? <Button variant="contained" color="primary" onClick={clickSendSTC}>领取空投</Button> : ''}
                   { row.status === 1 ? <Button variant="contained" color="secondary">已领取</Button> : ''}
                   { row.status === 0 ? <Button variant="contained" disabled>已领完</Button> : ''}
                 </TableCell>
