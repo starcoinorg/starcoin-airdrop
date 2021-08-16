@@ -22,7 +22,7 @@ interface projectList {
 const getProjectList = async ():Promise<projectList> => {
   let rlt:any =  await API.getProjectList({
     status: 'all',
-    token: ''
+    token: window.starcoin.selectedAddress || ''
   })
   let resp: projectList = rlt.data
   return resp
@@ -115,10 +115,10 @@ const Home: React.FC = () => {
                   {row.ExpireTime}
                 </TableCell>
                 <TableCell>
-                  { row.status === 0 ? <Button variant="contained" disabled>已过期</Button> : ''}
-                  { row.status === 1 ? <Button variant="contained" color="primary">领取空投</Button> : ''}
-                  { row.status === 2 ? <Button variant="contained" color="secondary">已领取</Button> : ''}
-                  { row.status === 3 ? <Button variant="contained" disabled>已领完</Button> : ''}
+                  { row.status === 2 ? <Button variant="contained" disabled>已过期</Button> : ''}
+                  { row.status === 3 ? <Button variant="contained" color="primary">领取空投</Button> : ''}
+                  { row.status === 1 ? <Button variant="contained" color="secondary">已领取</Button> : ''}
+                  { row.status === 0 ? <Button variant="contained" disabled>已领完</Button> : ''}
                 </TableCell>
               </TableRow>
             )):''}
