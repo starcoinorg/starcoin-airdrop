@@ -27,7 +27,7 @@ const App = () => {
   const { AccountStore } = useStores()
   useEffect(() => {
     AccountStore.setIsInstall(StarMaskOnboarding.isStarMaskInstalled())
-  })
+  },[])
   return (
     <div>
       <Header />

@@ -9,6 +9,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useStores } from '../../useStore'
 import { useEffect, useState } from 'react';
 import StarMaskOnboarding from '@starcoin/starmask-onboarding';
+import { observer } from 'mobx-react';
 // import IconButton from '@material-ui/core/IconButton';
 // import MenuIcon from '@material-ui/icons/Menu';
 
@@ -41,12 +42,15 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+
+
 const Headers: React.FC = () => {
   const classes = useStyles();
   const [accountStatus, setAccountStatus] = useState(-1)
   const { AccountStore } = useStores()
-  console.log('===>', AccountStore)
+  console.log('===>', AccountStore.isInstall)
   useEffect(() => {
+    console.log(AccountStore.isInstall)
     if (window.starcoin.selectedAddress) {
       setAccountStatus(1)
     } else if (AccountStore.isInstall) {
@@ -54,7 +58,7 @@ const Headers: React.FC = () => {
     } else {
       setAccountStatus(-1)
     }
-  },[AccountStore])
+  },[AccountStore.isInstall])
   function connectWallet() {
     if(accountStatus === 2) {
       window.starcoin.request({
@@ -64,6 +68,7 @@ const Headers: React.FC = () => {
       })
     }
   }
+
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -95,4 +100,4 @@ const Headers: React.FC = () => {
   );
 }
 
-export default Headers 
+export default observer(Headers) 
