@@ -27,8 +27,9 @@ const useStyles = makeStyles((theme) => ({
   },
   selectComp: {
     color: '#ffffff',
+    marginRight: '0.5rem',
     '& .MuiSelect-select': {
-      paddingRight: '30px'
+      paddingRight: '28px'
     },
     '& .MuiSelect-icon': {
       top: '3px',
