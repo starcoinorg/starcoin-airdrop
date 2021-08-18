@@ -72,12 +72,10 @@ interface rowlist {
   Status: any
 }
 
-const getList = async (token: string):Promise<any> => {
+const getList = async (addr: string):Promise<any> => {
   let data = await API.getList({
-    addr: token,
+    addr: addr || window.starcoin.selectedAddress,
     // addr: "0xd7f20befd34b9f1ab8aeae98b82a5a51",
-    function_id: "0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd",
-    type_args: "0x00000000000000000000000000000001::STC::STC",
   })
   return data
 }
