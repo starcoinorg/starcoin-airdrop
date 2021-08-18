@@ -75,9 +75,12 @@ interface rowlist {
 }
 
 const getList = async (addr: string):Promise<any> => {
+  if (!addr && !window.starcoin.selectedAddress) {
+    return 
+  }
   let data = await API.getList({
-    // addr: addr || window.starcoin.selectedAddress,
-    addr: "0x3f19d5422824f47e6c021978cee98f35",
+    addr: addr || window.starcoin.selectedAddress,
+    // addr: "0x3f19d5422824f47e6c021978cee98f35",
     networkVersion: window.starcoin.networkVersion
   })
   return data
@@ -208,7 +211,7 @@ const Home: React.FC = () => {
 
     const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
     console.log('========>', record)
-    const args = [record.OwnerAddress, record.AirdropId, record.Root, record.Idx, record.Amount, [record.Proof]]
+    const args = [record.OwnerAddress, record.AirdropId, record.Root, record.Idx, record.Amount, JSON.parse(record.Proof)]
     const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
     const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
 
@@ -315,6 +318,7 @@ const Home: React.FC = () => {
           </TableHead>
           
           <TableBody>
+            {rows.length === 0 ? '暂无数据' : '暂无数据'}
             {rows.map((row: rowlist) => (
               <TableRow key={row.Id}><TableCell>
                   <Box display="flex" alignItems="center">
