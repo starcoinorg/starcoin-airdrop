@@ -48,24 +48,21 @@ const Headers: React.FC = () => {
   const [accountAddress, setAccountAddress] = useState('')
   const { AccountStore } = useStores()
   useEffect(() => {
-    console.log(window.starcoin._state.accounts)
-    if (window.starcoin && window.starcoin._state.accounts && window.starcoin._state.accounts.length > 0 ) {
-      AccountStore.setAccountStatus(1)
+    console.log(window.starcoin && window.starcoin.selectedAddress,  window.starcoin.selectedAddress)
+    if (window.starcoin && window.starcoin.selectedAddress ) {
       setAccountStatus(1)
     } else if (AccountStore.isInstall) {
-      AccountStore.setAccountStatus(0)
-      setAccountStatus(1)
+      setAccountStatus(0)
     } else {
-      AccountStore.setAccountStatus(-1)
-      setAccountStatus(1)
+      setAccountStatus(-1)
     }
   },[AccountStore.isInstall, AccountStore.accountList, AccountStore.accountStatus])
   window.starcoin.on('accountsChanged', handleNewAccounts)
 
   function handleNewAccounts(accounts: any) {
-    AccountStore.setAccountList(accounts)
-    if(accounts.length == 0 ) {
-      AccountStore.setAccountStatus(0)
+    if(accounts.length === 0 ) {
+      setAccountStatus(0)
+      console.log(accountStatus)
     }
   }
 
@@ -79,7 +76,7 @@ const Headers: React.FC = () => {
       window.starcoin.request({
         method: 'stc_requestAccounts',
       }).then((res: any) => {
-        console.log(res)
+        console.log('-->', res)
         if(res.length > 0) {
           AccountStore.setAccountStatus(1)
           setAccountAddress(res[0] || '')
@@ -111,9 +108,9 @@ const Headers: React.FC = () => {
           </Box>
           <Box display="flex" alignItems="center">
             <Button variant="outlined" className={classes.buttonStyle} onClick={connectWallet}>
-              {AccountStore.accountStatus === 0 ? 'Connect Wallet':''}
-              {AccountStore.accountStatus === 1 ? `${accountAddress.substr(0,4) + '....' + accountAddress.substring(accountAddress.length - 4)}`:''}
-              {AccountStore.accountStatus === -1 ? 'Install Wallet':''}
+              {window.starcoin.selectedAddress ? window.starcoin.selectedAddress.substr(0,4) + '....' + window.starcoin.selectedAddress.substring(window.starcoin.selectedAddress.length - 4) :'Connect Wallet ' }
+              
+              {accountStatus === -1 ? 'Install Wallet':''}
             </Button>
           </Box>
         </Toolbar>

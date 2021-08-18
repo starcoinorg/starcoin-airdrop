@@ -321,7 +321,6 @@ const Home: React.FC = () => {
           </TableHead>
           
           <TableBody>
-            {rows.length === 0 ? '暂无数据' : '暂无数据'}
             {rows.map((row: rowlist) => (
               <TableRow key={row.Id}><TableCell>
                   <Box display="flex" alignItems="center">
