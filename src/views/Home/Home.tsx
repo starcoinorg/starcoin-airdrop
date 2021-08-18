@@ -158,6 +158,9 @@ const Home: React.FC = () => {
       let networkVersion = window.starcoin ? window.starcoin.networkVersion : ""
       let address = window.starcoin & window.starcoin.selectedAddress ? window.starcoin.selectedAddress : ""
       // let address = "0xd7f20befd34b9f1ab8aeae98b82a5a51"
+      if (!data || !data.data || !data.data.length) {
+        return
+      }
       for (let i = 0; i < data.data.length; i++ ) {
         let progress:number = ((new Date(data.data[i].Create).valueOf())/((new Date(data.data[i].Update).valueOf()))) * 100
         data.data[i]['progress'] = progress
