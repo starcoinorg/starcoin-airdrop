@@ -1,27 +1,6 @@
 import Server from './server'
 
 class API extends Server {
-  async getProjectList(params = {}):Promise<any> {
-    try {
-      let rlt = await this.axios(
-        "get",
-        'http://localhost:1323/getProjectList',
-        params,
-      )
-      if (rlt) {
-        return rlt    
-      } else {
-        let err = {
-          tip: 'Fail to get tList',
-          data: params,
-          url: 'http://localhost:1323/getProjectList',
-        }
-        throw err
-      }
-    } catch (err) {
-      throw err
-    }
-  }
   async getList(params = {}):Promise<any> {
     try {
       let rlt = await this.axios(
@@ -36,6 +15,27 @@ class API extends Server {
           tip: 'Fail to get tList',
           data: params,
           url: 'http://localhost:1323/getList',
+        }
+        throw err
+      }
+    } catch (err) {
+      throw err
+    }
+  }
+  async updateStats(params = {}):Promise<any> {
+    try {
+      let rlt = await this.axios(
+        "get",
+        'http://localhost:1323/updatestatus',
+        params,
+      )
+      if (rlt) {
+        return rlt    
+      } else {
+        let err = {
+          tip: 'Fail to get tList',
+          data: params,
+          url: 'http://localhost:1323/updatestatus',
         }
         throw err
       }

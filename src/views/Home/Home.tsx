@@ -68,15 +68,16 @@ interface rowlist {
   Amount: string,
   Create: string,
   progress: number,
-  status: any,
-  timediff: string
+  timediff: string,
+  Status: any
 }
 
 const getList = async (token: string):Promise<any> => {
   let data = await API.getList({
     addr: token,
+    // addr: "0xd7f20befd34b9f1ab8aeae98b82a5a51",
     function_id: "0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd",
-    type_args: "0x00000000000000000000000000000001::STC::STC"
+    type_args: "0x00000000000000000000000000000001::STC::STC",
   })
   return data
 }
@@ -151,22 +152,33 @@ const Home: React.FC = () => {
   useEffect(() => {
     (async() => {
       let data = await getList(AccountStore.accountList[0])
-      console.log(data)
+      let networkVersion = window.starcoin ? window.starcoin.networkVersion : ""
+      let address = window.starcoin & window.starcoin.selectedAddress ? window.starcoin.selectedAddress : ""
+      // let address = "0xd7f20befd34b9f1ab8aeae98b82a5a51"
       for (let i = 0; i < data.data.length; i++ ) {
         let progress:number = ((new Date(data.data[i].Create).valueOf())/((new Date(data.data[i].Update).valueOf()))) * 100
         data.data[i]['progress'] = progress
-        let r = await checkStatus(data.data[i])
-        if (r) {
-          data.data[i]['status'] = 1 
-        } else {
-          data.data[i]['status'] = 3
+        if (data.data[i]['Status'] === null) {
+          let r = await checkStatus(data.data[i])
+          if (r) {
+            data.data[i]['Status'] = 1 
+          } else {
+            data.data[i]['Status'] = 3
+          }
+          let timeDiff = getTimeDiff(data.data[i].Update)
+          if (timeDiff === 'Finished') {
+            data.data[i]['Status'] = 2
+          } else {
+            data.data[i]['timediff'] = timeDiff
+          }
+          await API.updateStats({
+            networkVersion,
+            address,
+            id: data.data[i].Id,
+            status: data.data[i]['Status']
+          })
         }
-        let timeDiff = getTimeDiff(data.data[i].Update)
-        if (timeDiff === 'Finished') {
-          data.data[i]['status'] = 2
-        } else {
-          data.data[i]['timediff'] = timeDiff
-        }
+        
       }
       setRows(data.data)
     })();
@@ -322,15 +334,15 @@ const Home: React.FC = () => {
                   {row.Create}
                 </TableCell>
                 <TableCell>
-                  { row.status === 1 ? <SuccessProgressbar valid={row.progress}  /> : ''}
-                  { row.status === 3 ? <InProgressbar valid={row.progress} timeDiff={row.timediff} /> : ''}
-                  { row.status === 2 ? <EndProgressbar valid={row.progress}  /> : ''}
+                  { row.Status === 1 ? <SuccessProgressbar valid={row.progress}  /> : ''}
+                  { row.Status === 3 ? <InProgressbar valid={row.progress} timeDiff={row.timediff} /> : ''}
+                  { row.Status === 2 ? <EndProgressbar valid={row.progress}  /> : ''}
                 </TableCell>
                 <TableCell>
-                  { row.status === 2 ? <Button variant="contained" disabled>已过期</Button> : ''}
-                  { row.status === 3 ? <Button variant="contained" color="primary" onClick={claimAirdrop}>领取空投</Button> : ''}
-                  { row.status === 1 ? <Button variant="contained" color="secondary">已领取</Button> : ''}
-                  { row.status === 0 ? <Button variant="contained" disabled>已领完</Button> : ''}
+                  { row.Status === 2 ? <Button variant="contained" disabled>已过期</Button> : ''}
+                  { row.Status === 3 ? <Button variant="contained" color="primary" onClick={claimAirdrop}>领取空投</Button> : ''}
+                  { row.Status === 1 ? <Button variant="contained" color="secondary">已领取</Button> : ''}
+                  { row.Status === 0 ? <Button variant="contained" disabled>已领完</Button> : ''}
                 </TableCell>
               </TableRow>
             )): ''}
