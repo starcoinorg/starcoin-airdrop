@@ -4,6 +4,7 @@ class AccountStore {
   isInstall: boolean =  false
   accountList: any = []
   currentAccount: string = ''
+  accountStatus: number = 0
 
   constructor() {
     makeAutoObservable(this, {}, {autoBind: true})
@@ -17,6 +18,9 @@ class AccountStore {
   }
   setCurrentAccount = (v: string) => {
     this.currentAccount = v
+  }
+  setAccountStatus = (v:number) => {
+    this.accountStatus = v
   }
 }
 

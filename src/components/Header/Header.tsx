@@ -41,42 +41,51 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-
-
-
-
 const Headers: React.FC = () => {
   const classes = useStyles();
   const [accountStatus, setAccountStatus] = useState(-1)
   const [accountAddress, setAccountAddress] = useState('')
   const { AccountStore } = useStores()
   useEffect(() => {
-    if (window.starcoin && window.starcoin.selectedAddress) {
+    console.log(window.starcoin._state.accounts)
+    if (window.starcoin && window.starcoin._state.accounts && window.starcoin._state.accounts.length > 0 ) {
+      AccountStore.setAccountStatus(1)
       setAccountStatus(1)
     } else if (AccountStore.isInstall) {
-      setAccountStatus(0)
+      AccountStore.setAccountStatus(0)
+      setAccountStatus(1)
     } else {
-      setAccountStatus(-1)
+      AccountStore.setAccountStatus(-1)
+      setAccountStatus(1)
     }
-  },[AccountStore.isInstall, AccountStore.accountList])
+  },[AccountStore.isInstall, AccountStore.accountList, AccountStore.accountStatus])
+  window.starcoin.on('accountsChanged', handleNewAccounts)
+
+  function handleNewAccounts(accounts: any) {
+    AccountStore.setAccountList(accounts)
+    if(accounts.length == 0 ) {
+      AccountStore.setAccountStatus(0)
+    }
+  }
+
   useEffect(() => {
     if (window.starcoin && window.starcoin._state.accounts.length > 0) {
       setAccountAddress(window.starcoin._state.accounts[0])
     } 
   },[])
   function connectWallet() {
-    if(accountStatus === 0) {
+    if(AccountStore.accountStatus === 0) {
       window.starcoin.request({
         method: 'stc_requestAccounts',
       }).then((res: any) => {
         console.log(res)
         if(res.length > 0) {
-          setAccountStatus(1)
+          AccountStore.setAccountStatus(1)
           setAccountAddress(res[0] || '')
           AccountStore.setCurrentAccount(res[0] || '')
         }
       })
-    } else if (accountStatus === -1) {
+    } else if (AccountStore.accountStatus === -1) {
       window.open("https://chrome.google.com/webstore/detail/starmask/mfhbebgoclkghebffdldpobeajmbecfk")
     }
   }
@@ -89,7 +98,7 @@ const Headers: React.FC = () => {
             <MenuIcon />
           </IconButton> */}
           <Typography variant="h6" className={classes.title}>
-            Starcoin Airdrop
+            StarCoin Airdrop
           </Typography>
           <Box display="flex" alignItems="center">
             <TranslateIcon className={classes.iconTr}/>
@@ -101,9 +110,9 @@ const Headers: React.FC = () => {
           </Box>
           <Box display="flex" alignItems="center">
             <Button variant="outlined" className={classes.buttonStyle} onClick={connectWallet}>
-              {accountStatus === 0 ? 'Connect Wallet':''}
-              {accountStatus === 1 ? `${accountAddress.substr(0,4) + '....' + window.starcoin.selectedAddress.substring(window.starcoin.selectedAddress.length - 4)}`:''}
-              {accountStatus === -1 ? 'Install Wallet':''}
+              {AccountStore.accountStatus === 0 ? 'Connect Wallet':''}
+              {AccountStore.accountStatus === 1 ? `${accountAddress.substr(0,4) + '....' + accountAddress.substring(accountAddress.length - 4)}`:''}
+              {AccountStore.accountStatus === -1 ? 'Install Wallet':''}
             </Button>
           </Box>
         </Toolbar>

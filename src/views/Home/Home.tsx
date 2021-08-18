@@ -66,7 +66,9 @@ interface rowlist {
   Id: number,
   Project: string,
   Amount: string,
-  Create: string,
+  CreateAt: string,
+  StartAt: string,
+  EndAt: string,
   progress: number,
   timediff: string,
   Status: any
@@ -75,7 +77,7 @@ interface rowlist {
 const getList = async (addr: string):Promise<any> => {
   let data = await API.getList({
     // addr: addr || window.starcoin.selectedAddress,
-    addr: "0xd7f20befd34b9f1ab8aeae98b82a5a51",
+    addr: "0x3f19d5422824f47e6c021978cee98f35",
     networkVersion: window.starcoin.networkVersion
   })
   return data
@@ -102,7 +104,6 @@ function getTimeDiff(end: string) {
     return `${hours} hours ${minutes} minutes`
   }
 }
-
 
 async function checkStatus(data: any) {
   const functionId = '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd'
@@ -157,14 +158,14 @@ const Home: React.FC = () => {
       for (let i = 0; i < data.data.length; i++ ) {
         let progress:number = ((new Date(data.data[i].Create).valueOf())/((new Date(data.data[i].Update).valueOf()))) * 100
         data.data[i]['progress'] = progress
-        if (data.data[i]['Status'] === null) {
+        if (data.data[i]['Status'] === 0) {
           let r = await checkStatus(data.data[i])
           if (r) {
             data.data[i]['Status'] = 1 
           } else {
             data.data[i]['Status'] = 3
           }
-          let timeDiff = getTimeDiff(data.data[i].Update)
+          let timeDiff = getTimeDiff(data.data[i].UpdateAt)
           if (timeDiff === 'Finished') {
             data.data[i]['Status'] = 2
           } else {
@@ -306,10 +307,10 @@ const Home: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell width="30%">Coin</TableCell>
-              <TableCell width="10%">Amount</TableCell>
-              <TableCell width="20%">Start Time</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell width="20%">Action</TableCell>
+              <TableCell width="10%">数量</TableCell>
+              <TableCell width="20%">开始时间</TableCell>
+              <TableCell>领取状态</TableCell>
+              <TableCell width="20%">操作</TableCell>
             </TableRow>
           </TableHead>
           
@@ -330,7 +331,7 @@ const Home: React.FC = () => {
                   {row.Amount}
                 </TableCell>
                 <TableCell>
-                  {row.Create}
+                  {row.StartAt}
                 </TableCell>
                 <TableCell>
                   { row.Status === 1 ? <SuccessProgressbar valid={row.progress}  /> : ''}
@@ -341,7 +342,7 @@ const Home: React.FC = () => {
                   { row.Status === 2 ? <Button variant="contained" disabled>已过期</Button> : ''}
                   { row.Status === 3 ? <Button variant="contained" color="primary" onClick={claimAirdrop}>领取空投</Button> : ''}
                   { row.Status === 1 ? <Button variant="contained" color="secondary">已领取</Button> : ''}
-                  { row.Status === 0 ? <Button variant="contained" disabled>已领完</Button> : ''}
+                  { row.Status === 0 ? <Button variant="contained" disabled>状态获取中</Button> : ''}
                 </TableCell>
               </TableRow>
             ))}
