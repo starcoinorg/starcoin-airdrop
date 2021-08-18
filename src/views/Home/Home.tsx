@@ -74,8 +74,8 @@ interface rowlist {
 
 const getList = async (addr: string):Promise<any> => {
   let data = await API.getList({
-    addr: addr || window.starcoin.selectedAddress,
-    // addr: "0xd7f20befd34b9f1ab8aeae98b82a5a51",
+    // addr: addr || window.starcoin.selectedAddress,
+    addr: "0xd7f20befd34b9f1ab8aeae98b82a5a51",
     networkVersion: window.starcoin.networkVersion
   })
   return data
@@ -314,7 +314,7 @@ const Home: React.FC = () => {
           </TableHead>
           
           <TableBody>
-            {rows.length > 0 ?rows.map((row: rowlist) => (
+            {rows.map((row: rowlist) => (
               <TableRow key={row.Id}><TableCell>
                   <Box display="flex" alignItems="center">
                     <Box>
@@ -344,7 +344,7 @@ const Home: React.FC = () => {
                   { row.Status === 0 ? <Button variant="contained" disabled>已领完</Button> : ''}
                 </TableCell>
               </TableRow>
-            )): ''}
+            ))}
           </TableBody> 
         </Table>
       </TableContainer>
