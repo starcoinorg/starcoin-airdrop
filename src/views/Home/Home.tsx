@@ -8,6 +8,8 @@ import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
 import CancelRoundedIcon from '@material-ui/icons/CancelRounded';
 import { green, red, blue } from '@material-ui/core/colors'; 
 import { hexlify } from '@ethersproject/bytes'
+import { useStores } from '../../useStore'
+import { observer } from 'mobx-react';
 
 const useStyles = makeStyles((theme) => ({
   paperContent: {
@@ -60,11 +62,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-interface projectList {
-  Data: any,
-  Count: number
-}
-
 interface rowlist {
   Id: number,
   Project: string,
@@ -75,18 +72,9 @@ interface rowlist {
   timediff: string
 }
 
-const getProjectList = async ():Promise<projectList> => {
-  let rlt:any =  await API.getProjectList({
-    status: 'all',
-    token: window.starcoin ? window.starcoin.selectedAddress || '' : ""
-  })
-  let resp: projectList = rlt.data
-  return resp
-}
-
-const getList = async ():Promise<any> => {
+const getList = async (token: string):Promise<any> => {
   let data = await API.getList({
-    addr: "0xd7f20befd34b9f1ab8aeae98b82a5a51",
+    addr: token,
     function_id: "0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd",
     type_args: "0x00000000000000000000000000000001::STC::STC"
   })
@@ -96,7 +84,6 @@ const getList = async ():Promise<any> => {
 function getTimeDiff(end: string) {
   let startTime:number = new Date().valueOf()
   let endTime:number = new Date(end).valueOf()
-  let rlt:string
   if (endTime <= startTime) {
     return 'Finished'
   }
@@ -147,6 +134,7 @@ const Home: React.FC = () => {
   const classes = useStyles();
   const [rows, setRows] = useState<any[]>([])
   const [count, setCount] = useState(0)
+  const { AccountStore } = useStores()
   // const [as, setAs] = useState()
   let starcoinProvider: any
   useEffect(() => {
@@ -162,7 +150,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     (async() => {
-      let data = await getList()
+      let data = await getList(AccountStore.accountList[0])
       console.log(data)
       for (let i = 0; i < data.data.length; i++ ) {
         let progress:number = ((new Date(data.data[i].Create).valueOf())/((new Date(data.data[i].Update).valueOf()))) * 100
@@ -174,7 +162,7 @@ const Home: React.FC = () => {
           data.data[i]['status'] = 3
         }
         let timeDiff = getTimeDiff(data.data[i].Update)
-        if (timeDiff == 'Finished') {
+        if (timeDiff === 'Finished') {
           data.data[i]['status'] = 2
         } else {
           data.data[i]['timediff'] = timeDiff
@@ -182,18 +170,7 @@ const Home: React.FC = () => {
       }
       setRows(data.data)
     })();
-  },[])
-
-  useEffect(() => {
-    (async() => {
-      let data = await getList()
-      for (let i = 0; i < data.data.length; i++ ) {
-        let progress:number = ((new Date(data.data[i].Create).valueOf())/((new Date(data.data[i].Update).valueOf()))) * 100
-        data.data[i]['progress'] = progress
-      }
-      setRows(data.data)
-    })();
-  },[])
+  },[AccountStore.accountList])
 
 
   async function claimAirdrop(e:any) {
@@ -330,7 +307,7 @@ const Home: React.FC = () => {
               <TableRow key={row.Id}><TableCell>
                   <Box display="flex" alignItems="center">
                     <Box>
-                      <img className={classes.tokenIcon} src="/img/token.png" />
+                      <img alt="stc" className={classes.tokenIcon} src="/img/token.png" />
                     </Box>
                     <Box>
                       <Typography variant="subtitle2">STC</Typography>
@@ -345,9 +322,9 @@ const Home: React.FC = () => {
                   {row.Create}
                 </TableCell>
                 <TableCell>
-                  { row.status == 1 ? <SuccessProgressbar valid={row.progress}  /> : ''}
-                  { row.status == 3 ? <InProgressbar valid={row.progress} timeDiff={row.timediff} /> : ''}
-                  { row.status == 2 ? <EndProgressbar valid={row.progress}  /> : ''}
+                  { row.status === 1 ? <SuccessProgressbar valid={row.progress}  /> : ''}
+                  { row.status === 3 ? <InProgressbar valid={row.progress} timeDiff={row.timediff} /> : ''}
+                  { row.status === 2 ? <EndProgressbar valid={row.progress}  /> : ''}
                 </TableCell>
                 <TableCell>
                   { row.status === 2 ? <Button variant="contained" disabled>已过期</Button> : ''}
@@ -367,4 +344,4 @@ const Home: React.FC = () => {
   )
 }
 
-export default Home
+export default observer(Home)
