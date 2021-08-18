@@ -5,6 +5,10 @@ const theme = createTheme({
   palette: {
     error: {
       main: red.A400
+    },
+    success: {
+      light: '#81c784',
+      main: '#4caf50'
     }
   }
 })

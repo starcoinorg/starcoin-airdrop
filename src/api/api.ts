@@ -12,9 +12,30 @@ class API extends Server {
         return rlt    
       } else {
         let err = {
-          tip: 'Fail to get crime reacord',
+          tip: 'Fail to get tList',
           data: params,
           url: 'http://localhost:1323/getProjectList',
+        }
+        throw err
+      }
+    } catch (err) {
+      throw err
+    }
+  }
+  async getList(params = {}):Promise<any> {
+    try {
+      let rlt = await this.axios(
+        "get",
+        'http://localhost:1323/getlist',
+        params,
+      )
+      if (rlt) {
+        return rlt    
+      } else {
+        let err = {
+          tip: 'Fail to get tList',
+          data: params,
+          url: 'http://localhost:1323/getList',
         }
         throw err
       }

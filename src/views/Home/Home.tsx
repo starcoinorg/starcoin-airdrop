@@ -1,10 +1,13 @@
 import React from 'react'
-import { Box, Button, ButtonGroup, Grid, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core'
+import { Box, Button, ButtonGroup, Grid, LinearProgress, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination';
 import { useEffect, useState } from 'react';
 import API from '../../api/api'
-import { providers} from '@starcoin/starcoin'
-//import { useStores } from '../../useStore';
+import { providers, utils, bcs} from '@starcoin/starcoin'
+import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
+import CancelRoundedIcon from '@material-ui/icons/CancelRounded';
+import { green, red, blue } from '@material-ui/core/colors'; 
+import { hexlify } from '@ethersproject/bytes'
 
 const useStyles = makeStyles((theme) => ({
   paperContent: {
@@ -12,12 +15,64 @@ const useStyles = makeStyles((theme) => ({
   },
   tableContent: {
     margin: '1rem 0',
+  },
+  inProgress: {
+    '&.MuiLinearProgress-colorPrimary': {
+      backgroundColor: blue[100],
+      '& .MuiLinearProgress-barColorPrimary': {
+        backgroundColor: blue[600]
+      }
+    },
+  },
+  inProgressBtn: {
+    color: red[400] 
+  },
+  successProgress: {
+    '&.MuiLinearProgress-colorPrimary': {
+      backgroundColor: green[100],
+      '& .MuiLinearProgress-barColorPrimary': {
+        backgroundColor: green[600]
+      }
+    },
+  },
+  successProgressBtn: {
+    color: green[400]
+  },
+  endProgress: {
+    '&.MuiLinearProgress-colorPrimary': {
+      backgroundColor: red[100],
+      '& .MuiLinearProgress-barColorPrimary': {
+        backgroundColor: red[600]
+      }
+    },
+  },
+  endProgressBtn: {
+    color: red[400]
+  },
+  tokenIcon: {
+    width: '40px',
+    height: '40px',
+    borderRadius: '50%',
+    marginRight: '0.3rem'
+  },
+  textNotes: {
+    fontSize: '12px'
   }
 }));
 
 interface projectList {
   Data: any,
   Count: number
+}
+
+interface rowlist {
+  Id: number,
+  Project: string,
+  Amount: string,
+  Create: string,
+  progress: number,
+  status: any,
+  timediff: string
 }
 
 const getProjectList = async ():Promise<projectList> => {
@@ -29,25 +84,74 @@ const getProjectList = async ():Promise<projectList> => {
   return resp
 }
 
+const getList = async ():Promise<any> => {
+  let data = await API.getList({
+    addr: "0xd7f20befd34b9f1ab8aeae98b82a5a51",
+    function_id: "0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd",
+    type_args: "0x00000000000000000000000000000001::STC::STC"
+  })
+  return data
+}
+
+function getTimeDiff(end: string) {
+  let startTime:number = new Date().valueOf()
+  let endTime:number = new Date(end).valueOf()
+  let rlt:string
+  if (endTime <= startTime) {
+    return 'Finished'
+  }
+  console.log(startTime)
+  console.log(end)
+  console.log(endTime - startTime)
+  console.log(1000 * 3600 * 24)
+  let daysDiff:number = 1000 * 3600 * 24
+  if(daysDiff < (endTime - startTime)) {
+    let days:number = Math.floor((endTime - startTime) / daysDiff)
+    let hours:number = Math.floor(((endTime - startTime) - (days * daysDiff))  / 3600000)
+    return `${days} day ${hours} hours`
+  } else {
+    let hours:number = Math.floor((endTime - startTime) / 3600000)
+    let minutes:number = Math.floor(((endTime - startTime) - (hours * 3600000))  / 60000)
+    return `${hours} hours ${minutes} minutes`
+  }
+}
+
+
+async function checkStatus(data: any) {
+  const functionId = '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd'
+  const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
+  const args = [data.OwnerAddress, `${data.AirdropId}`, `x\"${data.Root.slice(2)}\"`, `${data.Idx}u64`]
+  const starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
+  const isClaimed = await new Promise((resolve, reject) => {
+    return starcoinProvider.send(
+      'contract.call_v2',
+      [
+        {
+          function_id: functionId,
+          type_args: tyArgs,
+          args,
+        },
+      ],
+    ).then((result) => {
+      if (result && Array.isArray(result) && result.length) {
+          resolve(result[0])
+      } else {
+        reject(new Error('fetch failed'))
+      }
+    })
+  });
+  return isClaimed
+}
 
 const Home: React.FC = () => {
   const classes = useStyles();
-  const [rows, setRows] = useState([{
-    ExpireTime: '',
-    CreateTime: '',
-    status: 0,
-    Id: 0,
-    Project: '',
-    ValidAmount: 0,
-    TotalAmount: 0,
-  }])
+  const [rows, setRows] = useState<any[]>([])
   const [count, setCount] = useState(0)
   // const [as, setAs] = useState()
   let starcoinProvider: any
   useEffect(() => {
     try {
       if (window.starcoin) {
-        console.log(1)
         starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
         // setAs(starcoinProvider)
       }
@@ -55,27 +159,116 @@ const Home: React.FC = () => {
       console.log(err)
     }
   },[])
+
   useEffect(() => {
     (async() => {
-      let data = await getProjectList()
-      setRows(data.Data || [])
-      setCount(data.Count)
+      let data = await getList()
+      console.log(data)
+      for (let i = 0; i < data.data.length; i++ ) {
+        let progress:number = ((new Date(data.data[i].Create).valueOf())/((new Date(data.data[i].Update).valueOf()))) * 100
+        data.data[i]['progress'] = progress
+        let r = await checkStatus(data.data[i])
+        if (r) {
+          data.data[i]['status'] = 1 
+        } else {
+          data.data[i]['status'] = 3
+        }
+        let timeDiff = getTimeDiff(data.data[i].Update)
+        if (timeDiff == 'Finished') {
+          data.data[i]['status'] = 2
+        } else {
+          data.data[i]['timediff'] = timeDiff
+        }
+      }
+      setRows(data.data)
     })();
   },[])
-  async function clickSendSTC() {
-    let account = window.starcoin._state.accounts[0] || ''
-    let transAmount = 1000000
-    let amount = `0x${transAmount.toString(16)}`
-    let txParams = {
-      to: account,
-      value: amount,
-      gasLimit: 127845,
-      gasPrice: 1,
-    }
+
+  useEffect(() => {
+    (async() => {
+      let data = await getList()
+      for (let i = 0; i < data.data.length; i++ ) {
+        let progress:number = ((new Date(data.data[i].Create).valueOf())/((new Date(data.data[i].Update).valueOf()))) * 100
+        data.data[i]['progress'] = progress
+      }
+      setRows(data.data)
+    })();
+  },[])
+
+
+  async function claimAirdrop(e:any) {
+    let record = rows[e.button]
     starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
+    const airdropFunctionIdMap:any = {
+      '1': '', // main
+      '2': '', // proxima
+      '251': '0xf8af03dd08de49d81e4efd9e24c039cc::MerkleDistributorScript::claim_script', // barnard
+      '253': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // halley
+      '254': '', // localhost
+    }
+    
+    const nodeUrlMap:any = {
+      '1': 'https://main-seed.starcoin.org',
+      '2': 'https://proxima-seed.starcoin.org',
+      '251': 'https://barnard-seed.starcoin.org',
+      '253': 'https://halley-seed.starcoin.org',
+      '254': 'http://localhost:9850',
+    }
+    
+    const functionId = airdropFunctionIdMap[window.starcoin.networkVersion]
+
+    const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
+    console.log('========>', record)
+    const args = [record.OwnerAddress, record.AirdropId, record.Root, record.Idx, record.Amount, [record.Proof]]
+    const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
+    const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
+
+    const payloadInHex = (function () {
+      const se = new bcs.BcsSerializer()
+      scriptFunction.serialize(se)
+      return hexlify(se.getBytes())
+    })()
+    // console.log({ payloadInHex })
+
+    const txParams = {
+      data: payloadInHex,
+    }
+
     const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
     console.log(transactionHash)
   }
+  function SuccessProgressbar (props:any) {
+    let valid = props.valid
+    let total = props.total
+    return (<Box display="flex" alignItems="center">
+      <LinearProgress className={classes.successProgress} variant="determinate" style={{ flexGrow: 1, marginRight:'0.5rem'}}  value={(valid/total)* 100}></LinearProgress>
+      <CheckCircleRoundedIcon className={classes.successProgressBtn}/>
+    </Box>)
+  }
+
+  function InProgressbar (props: any) {
+    let valid = props.valid
+    let timeDiff = props.timeDiff
+    console.log(props)
+    return (
+    <Box display="flex" alignItems="center">
+      <LinearProgress className={classes.inProgress} variant="determinate" style={{ flexGrow: 1, marginRight:'0.5rem'}}  value={valid}></LinearProgress>
+      <Typography className={classes.textNotes}>{timeDiff}</Typography>
+    </Box>
+    )
+  }
+
+  function EndProgressbar(props:any) {
+    let valid = props.valid
+    let total = props.total
+    return (
+      <Box display="flex" alignItems="center">
+        <LinearProgress className={classes.endProgress} variant="determinate" style={{ flexGrow: 1, marginRight:'0.5rem'}}  value={(valid/total)* 100}></LinearProgress>
+        <CancelRoundedIcon className={classes.endProgressBtn} />
+      </Box>
+    )
+  }
+
   return (
     <div>
       <Box display="flex" justifyContent="space-between">
@@ -124,41 +317,47 @@ const Home: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Project</TableCell>
-              <TableCell>Winner Amount</TableCell>
-              <TableCell>Airdrop Amount</TableCell>
-              <TableCell>Start Time</TableCell>
-              <TableCell>End Time</TableCell>
+              <TableCell width="30%">Coin</TableCell>
+              <TableCell width="10%">Amount</TableCell>
+              <TableCell width="20%">Start Time</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell width="20%">Action</TableCell>
             </TableRow>
           </TableHead>
+          
           <TableBody>
-            {rows.length ? rows.map((row) => (
-              <TableRow key={row.Id}>
-                <TableCell>
-                  {row.Project}
+            {rows.length > 0 ?rows.map((row: rowlist) => (
+              <TableRow key={row.Id}><TableCell>
+                  <Box display="flex" alignItems="center">
+                    <Box>
+                      <img className={classes.tokenIcon} src="/img/token.png" />
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle2">STC</Typography>
+                      <Typography className={classes.textNotes}>参与投票获得空投奖励</Typography>
+                    </Box>
+                  </Box>
                 </TableCell>
                 <TableCell>
-                  {row.ValidAmount}
+                  {row.Amount}
                 </TableCell>
                 <TableCell>
-                  {row.TotalAmount}
+                  {row.Create}
                 </TableCell>
                 <TableCell>
-                  {row.CreateTime}
-                </TableCell>
-                <TableCell>
-                  {row.ExpireTime}
+                  { row.status == 1 ? <SuccessProgressbar valid={row.progress}  /> : ''}
+                  { row.status == 3 ? <InProgressbar valid={row.progress} timeDiff={row.timediff} /> : ''}
+                  { row.status == 2 ? <EndProgressbar valid={row.progress}  /> : ''}
                 </TableCell>
                 <TableCell>
                   { row.status === 2 ? <Button variant="contained" disabled>已过期</Button> : ''}
-                  { row.status === 3 ? <Button variant="contained" color="primary" onClick={clickSendSTC}>领取空投</Button> : ''}
+                  { row.status === 3 ? <Button variant="contained" color="primary" onClick={claimAirdrop}>领取空投</Button> : ''}
                   { row.status === 1 ? <Button variant="contained" color="secondary">已领取</Button> : ''}
                   { row.status === 0 ? <Button variant="contained" disabled>已领完</Button> : ''}
                 </TableCell>
               </TableRow>
-            )):''}
-          </TableBody>
+            )): ''}
+          </TableBody> 
         </Table>
       </TableContainer>
       <Grid container justifyContent="flex-end">
