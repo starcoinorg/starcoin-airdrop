@@ -74,8 +74,9 @@ interface rowlist {
 
 const getList = async (addr: string):Promise<any> => {
   let data = await API.getList({
-    addr: addr || window.starcoin.selectedAddress,
-    // addr: "0xd7f20befd34b9f1ab8aeae98b82a5a51",
+    //addr: addr || window.starcoin.selectedAddress,
+    addr: "0xd7f20befd34b9f1ab8aeae98b82a5a51",
+    networkVersion: window.starcoin.networkVersion
   })
   return data
 }

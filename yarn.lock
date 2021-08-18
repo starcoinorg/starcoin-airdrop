@@ -2066,7 +2066,7 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@starcoin/starcoin@^1.4.7":
+"@starcoin/starcoin@^1.4.9":
   version "1.4.7"
   resolved "https://registry.nlark.com/@starcoin/starcoin/download/@starcoin/starcoin-1.4.7.tgz#b7db6a3fc28b80edf88cb1b645122fc1f781e440"
   integrity sha1-t9tqP8KLgO34jLG2RRIvwfeB5EA=
