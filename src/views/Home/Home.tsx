@@ -76,7 +76,12 @@ interface rowlist {
   Status: any
 }
 
-var starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
+let starcoinProvider: any
+
+if (window.starcoin) {
+  starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
+}
+
 
 const getList = async (addr: string): Promise<any> => {
   if (!addr && !window.starcoin.selectedAddress) {
@@ -122,7 +127,7 @@ async function checkStatus(data: any) {
           args,
         },
       ],
-    ).then((result) => {
+    ).then((result: any) => {
       console.log(result)
       if (result && Array.isArray(result) && result.length) {
         resolve(result[0])
@@ -178,6 +183,9 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     (async () => {
+      if (!(window.starcoin && window.starcoin.selectedAddress && window.starcoin.networkVersion)) {
+        return
+      }
       console.log('useEffect', 'address', address, 'network', network)
       let data = await getList(window.starcoin.selectedAddress)
       let networkVersion = window.starcoin ? window.starcoin.networkVersion : ""

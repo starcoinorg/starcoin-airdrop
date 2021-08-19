@@ -59,8 +59,11 @@ const Headers: React.FC = () => {
       setAccountStatus(-1)
     }
   }, [AccountStore.isInstall, AccountStore.accountStatus])
-  window.starcoin.on('accountsChanged', handleNewAccounts)
-  window.starcoin.on('networkChanged', handleNewNetwork)
+
+  if (window.starcoin) {
+    window.starcoin.on('accountsChanged', handleNewAccounts)
+    window.starcoin.on('networkChanged', handleNewNetwork)
+  }
 
   function handleNewAccounts(accounts: any) {
     if (accounts.length === 0) {
@@ -76,8 +79,10 @@ const Headers: React.FC = () => {
   }
 
   useEffect(() => {
-    setNetwork(window.starcoin.networkVersion)
-  })
+    if (window.starcoin && window.starcoin.networkVersion) {
+      setNetwork(window.starcoin && window.starcoin.networkVersion)
+    }
+  }, [])
 
 
 
@@ -125,8 +130,8 @@ const Headers: React.FC = () => {
               {AccountStore.networkVersion[network]}
             </Button>
             <Button variant="outlined" className={classes.buttonStyle} onClick={connectWallet}>
-              {accountStatus === -1 ? 'Install Wallet' : ''}
-              {accountStatus === 0 ? 'Connect Wallet' : ''}
+              {accountStatus === -1 ? '安装钱包' : ''}
+              {accountStatus === 0 ? '连接钱包' : ''}
               {accountStatus === 1 ? accountAddress.substr(0, 4) + '....' + accountAddress.substring(accountAddress.length - 4) : ''}
             </Button>
           </Box>
