@@ -180,7 +180,10 @@ const Home: React.FC = () => {
         return
       }
       for (let i = 0; i < data.data.length; i++) {
-        let progress: number = ((new Date(data.data[i].Create).valueOf()) / ((new Date(data.data[i].Update).valueOf()))) * 100
+        let s = new Date(data.data[i].StartAt).valueOf()
+        let n = new Date().valueOf()
+        let end = new Date(data.data[i].EndAt).valueOf()
+        let progress: number = (( n - s ) /( end - s ))  * 100
         data.data[i]['progress'] = progress
         if ([0, 3].includes(data.data[i]['Status'])) {
           let r = await checkStatus(data.data[i])
