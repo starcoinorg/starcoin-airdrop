@@ -84,7 +84,6 @@ const getList = async (addr: string): Promise<any> => {
   }
   let data = await API.getList({
     addr: addr || window.starcoin.selectedAddress,
-    // addr: "0xd7f20befd34b9f1ab8aeae98b82a5a51",
     networkVersion: window.starcoin.networkVersion
   })
   return data
@@ -149,16 +148,16 @@ const Home: React.FC = () => {
       if (window.starcoin) {
         starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
         setAddress(window.starcoin.selectedAddress)
+        window.starcoin.on('accountsChanged', handleNewAccounts)
+        window.starcoin.on('networkChanged', handleNewNetwork)
       }
     } catch (err) {
       console.log(err)
     }
   }, [])
 
-  window.starcoin.on('accountsChanged', handleNewAccounts)
-  window.starcoin.on('networkChanged', handleNewNetwork)
-
   console.log('**', address)
+  console.log('**', network)
   function handleNewAccounts(accounts: any) {
     if (accounts.length === 0) {
       setRows([])
@@ -179,9 +178,10 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     (async () => {
+      console.log('useEffect', 'address', address, 'network', network)
       let data = await getList(window.starcoin.selectedAddress)
       let networkVersion = window.starcoin ? window.starcoin.networkVersion : ""
-      let address = window.starcoin & window.starcoin.selectedAddress ? window.starcoin.selectedAddress : ""
+      // let address = window.starcoin & window.starcoin.selectedAddress ? window.starcoin.selectedAddress : ""
       if (!data || !data.data || !data.data.length) {
         return
       }
@@ -346,9 +346,15 @@ const Home: React.FC = () => {
       )
     } else {
       return (
-        <Box>
-          暂无数据
-        </Box>
+        <TableBody>
+          <TableRow>
+            <TableCell colSpan={5} align="center">
+              <Box>
+                暂无数据
+              </Box>
+            </TableCell>
+          </TableRow>
+        </TableBody>
       )
     }
   }
