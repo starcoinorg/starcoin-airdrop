@@ -3,10 +3,10 @@ import { Box, Button, ButtonGroup, Grid, LinearProgress, makeStyles, Paper, Tabl
 import Pagination from '@material-ui/lab/Pagination';
 import { useEffect, useState } from 'react';
 import API from '../../api/api'
-import { providers, utils, bcs} from '@starcoin/starcoin'
+import { providers, utils, bcs } from '@starcoin/starcoin'
 import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
 import CancelRoundedIcon from '@material-ui/icons/CancelRounded';
-import { green, red, blue } from '@material-ui/core/colors'; 
+import { green, red, blue } from '@material-ui/core/colors';
 import { hexlify } from '@ethersproject/bytes'
 import { useStores } from '../../useStore'
 import { observer } from 'mobx-react';
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   inProgressBtn: {
-    color: red[400] 
+    color: red[400]
   },
   successProgress: {
     '&.MuiLinearProgress-colorPrimary': {
@@ -76,9 +76,9 @@ interface rowlist {
 
 var starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
 
-const getList = async (addr: string):Promise<any> => {
+const getList = async (addr: string): Promise<any> => {
   if (!addr && !window.starcoin.selectedAddress) {
-    return 
+    return
   }
   let data = await API.getList({
     addr: addr || window.starcoin.selectedAddress,
@@ -89,27 +89,27 @@ const getList = async (addr: string):Promise<any> => {
 }
 
 function getTimeDiff(end: string) {
-  let startTime:number = new Date().valueOf()
-  let endTime:number = new Date(end).valueOf()
+  let startTime: number = new Date().valueOf()
+  let endTime: number = new Date(end).valueOf()
   if (endTime <= startTime) {
     return 'Finished'
   }
-  let daysDiff:number = 1000 * 3600 * 24
-  if(daysDiff < (endTime - startTime)) {
-    let days:number = Math.floor((endTime - startTime) / daysDiff)
-    let hours:number = Math.floor(((endTime - startTime) - (days * daysDiff))  / 3600000)
-    return `${days} day ${hours} hours`
+  let daysDiff: number = 1000 * 3600 * 24
+  if (daysDiff < (endTime - startTime)) {
+    let days: number = Math.floor((endTime - startTime) / daysDiff)
+    let hours: number = Math.floor(((endTime - startTime) - (days * daysDiff)) / 3600000)
+    return `${ days } day ${ hours } hours`
   } else {
-    let hours:number = Math.floor((endTime - startTime) / 3600000)
-    let minutes:number = Math.floor(((endTime - startTime) - (hours * 3600000))  / 60000)
-    return `${hours} hours ${minutes} minutes`
+    let hours: number = Math.floor((endTime - startTime) / 3600000)
+    let minutes: number = Math.floor(((endTime - startTime) - (hours * 3600000)) / 60000)
+    return `${ hours } hours ${ minutes } minutes`
   }
 }
 
 async function checkStatus(data: any) {
   const functionId = '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd'
   const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
-  const args = [data.OwnerAddress, `${data.AirdropId}`, `x\"${data.Root.slice(2)}\"`, `${data.Idx}u64`]
+  const args = [data.OwnerAddress, `${ data.AirdropId }`, `x\"${ data.Root.slice(2) }\"`, `${ data.Idx }u64`]
   const isClaimed = await new Promise((resolve, reject) => {
     return starcoinProvider.send(
       'contract.call_v2',
@@ -122,7 +122,7 @@ async function checkStatus(data: any) {
       ],
     ).then((result) => {
       if (result && Array.isArray(result) && result.length) {
-          resolve(result[0])
+        resolve(result[0])
       } else {
         reject(new Error('fetch failed'))
       }
@@ -135,7 +135,7 @@ const Home: React.FC = () => {
   const classes = useStyles();
   const [rows, setRows] = useState<any[]>([])
   const [count, setCount] = useState(0)
-  const [address, setAddress] = useState("") 
+  const [address, setAddress] = useState("")
   const { AccountStore } = useStores()
   // const [as, setAs] = useState()
   let starcoinProvider: any
@@ -148,12 +148,12 @@ const Home: React.FC = () => {
     } catch (err) {
       console.log(err)
     }
-  },[])
+  }, [])
 
   window.starcoin.on('accountsChanged', handleNewAccounts)
   console.log('**', address)
   function handleNewAccounts(accounts: any) {
-    if(accounts.length === 0 ) {
+    if (accounts.length === 0) {
       setRows([])
     } else {
       setAddress(accounts[0])
@@ -162,7 +162,7 @@ const Home: React.FC = () => {
 
 
   useEffect(() => {
-    (async() => {
+    (async () => {
       let data = await getList(window.starcoin.selectedAddress)
       let networkVersion = window.starcoin ? window.starcoin.networkVersion : ""
       let address = window.starcoin & window.starcoin.selectedAddress ? window.starcoin.selectedAddress : ""
@@ -170,13 +170,13 @@ const Home: React.FC = () => {
       if (!data || !data.data || !data.data.length) {
         return
       }
-      for (let i = 0; i < data.data.length; i++ ) {
-        let progress:number = ((new Date(data.data[i].Create).valueOf())/((new Date(data.data[i].Update).valueOf()))) * 100
+      for (let i = 0; i < data.data.length; i++) {
+        let progress: number = ((new Date(data.data[i].Create).valueOf()) / ((new Date(data.data[i].Update).valueOf()))) * 100
         data.data[i]['progress'] = progress
         if (data.data[i]['Status'] === 0) {
           let r = await checkStatus(data.data[i])
           if (r) {
-            data.data[i]['Status'] = 1 
+            data.data[i]['Status'] = 1
           } else {
             data.data[i]['Status'] = 3
           }
@@ -193,32 +193,32 @@ const Home: React.FC = () => {
             status: data.data[i]['Status']
           })
         }
-        
+
       }
       setRows(data.data)
     })();
-  },[address])
+  }, [address])
 
 
-  async function claimAirdrop(e:any) {
+  async function claimAirdrop(e: any) {
     let record = rows[e.button]
     starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
-    const airdropFunctionIdMap:any = {
+    const airdropFunctionIdMap: any = {
       '1': '', // main
       '2': '', // proxima
       '251': '0xf8af03dd08de49d81e4efd9e24c039cc::MerkleDistributorScript::claim_script', // barnard
       '253': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // halley
       '254': '', // localhost
     }
-    
-    const nodeUrlMap:any = {
+
+    const nodeUrlMap: any = {
       '1': 'https://main-seed.starcoin.org',
       '2': 'https://proxima-seed.starcoin.org',
       '251': 'https://barnard-seed.starcoin.org',
       '253': 'https://halley-seed.starcoin.org',
       '254': 'http://localhost:9850',
     }
-    
+
     const functionId = airdropFunctionIdMap[window.starcoin.networkVersion]
 
     const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
@@ -246,32 +246,32 @@ const Home: React.FC = () => {
       console.log('Status Updated fail')
     }
   }
-  function SuccessProgressbar (props:any) {
+  function SuccessProgressbar(props: any) {
     let valid = props.valid
     let total = props.total
     return (<Box display="flex" alignItems="center">
-      <LinearProgress className={classes.successProgress} variant="determinate" style={{ flexGrow: 1, marginRight:'0.5rem'}}  value={(valid/total)* 100}></LinearProgress>
-      <CheckCircleRoundedIcon className={classes.successProgressBtn}/>
+      <LinearProgress className={classes.successProgress} variant="determinate" style={{ flexGrow: 1, marginRight: '0.5rem' }} value={(valid / total) * 100}></LinearProgress>
+      <CheckCircleRoundedIcon className={classes.successProgressBtn} />
     </Box>)
   }
 
-  function InProgressbar (props: any) {
+  function InProgressbar(props: any) {
     let valid = props.valid
     let timeDiff = props.timeDiff
     return (
-    <Box display="flex" alignItems="center">
-      <LinearProgress className={classes.inProgress} variant="determinate" style={{ flexGrow: 1, marginRight:'0.5rem'}}  value={valid}></LinearProgress>
-      <Typography className={classes.textNotes}>{timeDiff}</Typography>
-    </Box>
+      <Box display="flex" alignItems="center">
+        <LinearProgress className={classes.inProgress} variant="determinate" style={{ flexGrow: 1, marginRight: '0.5rem' }} value={valid}></LinearProgress>
+        <Typography className={classes.textNotes}>{timeDiff}</Typography>
+      </Box>
     )
   }
 
-  function EndProgressbar(props:any) {
+  function EndProgressbar(props: any) {
     let valid = props.valid
     let total = props.total
     return (
       <Box display="flex" alignItems="center">
-        <LinearProgress className={classes.endProgress} variant="determinate" style={{ flexGrow: 1, marginRight:'0.5rem'}}  value={(valid/total)* 100}></LinearProgress>
+        <LinearProgress className={classes.endProgress} variant="determinate" style={{ flexGrow: 1, marginRight: '0.5rem' }} value={(valid / total) * 100}></LinearProgress>
         <CancelRoundedIcon className={classes.endProgressBtn} />
       </Box>
     )
@@ -285,16 +285,16 @@ const Home: React.FC = () => {
           {
             rows.map((row: rowlist) => (
               <TableRow key={row.Id}><TableCell>
-                  <Box display="flex" alignItems="center">
-                    <Box>
-                      <img alt="stc" className={classes.tokenIcon} src="/img/token.png" />
-                    </Box>
-                    <Box>
-                      <Typography variant="subtitle2">STC</Typography>
-                      <Typography className={classes.textNotes}>参与投票获得空投奖励</Typography>
-                    </Box>
+                <Box display="flex" alignItems="center">
+                  <Box>
+                    <img alt="stc" className={classes.tokenIcon} src="/img/token.png" />
                   </Box>
-                </TableCell>
+                  <Box>
+                    <Typography variant="subtitle2">STC</Typography>
+                    <Typography className={classes.textNotes}>参与投票获得空投奖励</Typography>
+                  </Box>
+                </Box>
+              </TableCell>
                 <TableCell>
                   {row.Amount}
                 </TableCell>
@@ -302,15 +302,15 @@ const Home: React.FC = () => {
                   {row.StartAt}
                 </TableCell>
                 <TableCell>
-                  { row.Status === 1 ? <SuccessProgressbar valid={row.progress}  /> : ''}
-                  { row.Status === 3 ? <InProgressbar valid={row.progress} timeDiff={row.timediff} /> : ''}
-                  { row.Status === 2 ? <EndProgressbar valid={row.progress}  /> : ''}
+                  {row.Status === 1 ? <SuccessProgressbar valid={row.progress} /> : ''}
+                  {row.Status === 3 ? <InProgressbar valid={row.progress} timeDiff={row.timediff} /> : ''}
+                  {row.Status === 2 ? <EndProgressbar valid={row.progress} /> : ''}
                 </TableCell>
                 <TableCell>
-                  { row.Status === 2 ? <Button variant="contained" disabled>已过期</Button> : ''}
-                  { row.Status === 3 ? <Button variant="contained" color="primary" onClick={claimAirdrop}>领取空投</Button> : ''}
-                  { row.Status === 1 ? <Button variant="contained" color="secondary">已领取</Button> : ''}
-                  { row.Status === 0 ? <Button variant="contained" disabled>状态获取中</Button> : ''}
+                  {row.Status === 2 ? <Button variant="contained" disabled>已过期</Button> : ''}
+                  {row.Status === 3 ? <Button variant="contained" color="primary" onClick={claimAirdrop}>领取空投</Button> : ''}
+                  {row.Status === 1 ? <Button variant="contained" color="secondary">已领取</Button> : ''}
+                  {row.Status === 0 ? <Button variant="contained" disabled>状态获取中</Button> : ''}
                 </TableCell>
               </TableRow>
             ))
@@ -329,7 +329,7 @@ const Home: React.FC = () => {
   return (
     <div>
       <Box display="flex" justifyContent="space-between">
-        <Typography  variant="h6" align="left"> 空投列表 </Typography>
+        <Typography variant="h6" align="left"> 空投列表 </Typography>
         <ButtonGroup color="primary" aria-label="outlined primary button group">
           <Button>全部</Button>
           <Button>进行中</Button>
@@ -381,12 +381,12 @@ const Home: React.FC = () => {
               <TableCell width="20%">操作</TableCell>
             </TableRow>
           </TableHead>
-          
-          <CustTablebody rows={rows}/>
+
+          <CustTablebody rows={rows} />
         </Table>
       </TableContainer>
       <Grid container justifyContent="flex-end">
-        <Pagination count={count/10 + 1} /> 
+        <Pagination count={count / 10 + 1} />
       </Grid>
     </div>
   )
