@@ -10,6 +10,7 @@ import { green, red, blue } from '@material-ui/core/colors';
 import { hexlify } from '@ethersproject/bytes'
 import { useStores } from '../../useStore'
 import { observer } from 'mobx-react';
+import BigNumber from 'bignumber.js';
 
 const useStyles = makeStyles((theme) => ({
   paperContent: {
@@ -64,8 +65,9 @@ const useStyles = makeStyles((theme) => ({
 
 interface rowlist {
   Id: number,
-  Project: string,
+  Name: string,
   Amount: string,
+  Precision: number,
   CreateAt: string,
   StartAt: string,
   EndAt: string,
@@ -169,13 +171,17 @@ const Home: React.FC = () => {
     setNetwork(n)
   }
 
+  function formatBalance(num: string | number) {
+    const value = new BigNumber(num);
+    const convertedValue = value.div(1000000000).toFormat();
+    return convertedValue;
+  }
 
   useEffect(() => {
     (async () => {
       let data = await getList(window.starcoin.selectedAddress)
       let networkVersion = window.starcoin ? window.starcoin.networkVersion : ""
       let address = window.starcoin & window.starcoin.selectedAddress ? window.starcoin.selectedAddress : ""
-      // let address = "0xd7f20befd34b9f1ab8aeae98b82a5a51"
       if (!data || !data.data || !data.data.length) {
         return
       }
@@ -183,7 +189,7 @@ const Home: React.FC = () => {
         let s = new Date(data.data[i].StartAt).valueOf()
         let n = new Date().valueOf()
         let end = new Date(data.data[i].EndAt).valueOf()
-        let progress: number = (( n - s ) /( end - s ))  * 100
+        let progress: number = ((n - s) / (end - s)) * 100
         data.data[i]['progress'] = progress
         if ([0, 3].includes(data.data[i]['Status'])) {
           let r = await checkStatus(data.data[i])
@@ -299,6 +305,7 @@ const Home: React.FC = () => {
 
   function CustTablebody(props: any) {
     let rows = props.rows
+    console.log(rows)
     if (rows.length > 0) {
       return (
         <TableBody>
@@ -311,12 +318,12 @@ const Home: React.FC = () => {
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">STC</Typography>
-                    <Typography className={classes.textNotes}>参与投票获得空投奖励</Typography>
+                    <Typography className={classes.textNotes}>{row.Name}</Typography>
                   </Box>
                 </Box>
               </TableCell>
                 <TableCell>
-                  {row.Amount}
+                  {formatBalance(row.Amount)}
                 </TableCell>
                 <TableCell>
                   {row.StartAt}
