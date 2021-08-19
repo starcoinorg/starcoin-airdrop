@@ -179,7 +179,12 @@ const Home: React.FC = () => {
           let r = await checkStatus(data.data[i])
           if (r) {
             if (data.data[i]['Status'] === 3) {
-              // call api to update status =1 in db
+              await API.updateStats({
+                networkVersion,
+                address,
+                id: data.data[i].Id,
+                status: 1
+              })
             }
             data.data[i]['Status'] = 1
           } else {
