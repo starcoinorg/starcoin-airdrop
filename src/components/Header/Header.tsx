@@ -3,9 +3,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { Box, Button, MenuItem, Select } from '@material-ui/core';
-import TranslateIcon from '@material-ui/icons/Translate';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Box, Button } from '@material-ui/core';
+// import TranslateIcon from '@material-ui/icons/Translate';
+// import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useStores } from '../../useStore'
 import { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
@@ -74,7 +74,7 @@ const Headers: React.FC = () => {
     }
   }
 
-  function handleNewNetwork(netwrok: any) {
+  function handleNewNetwork(network: any) {
     setNetwork(network)
   }
 
@@ -91,7 +91,8 @@ const Headers: React.FC = () => {
       setAccountAddress(window.starcoin.selectedAddress)
     }
   }, [])
-  function connectWallet() {
+
+  async function connectWallet() {
     if (accountStatus === 0) {
       window.starcoin.request({
         method: 'stc_requestAccounts',
@@ -106,7 +107,6 @@ const Headers: React.FC = () => {
       window.open("https://chrome.google.com/webstore/detail/starmask/mfhbebgoclkghebffdldpobeajmbecfk")
     }
   }
-
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -126,8 +126,8 @@ const Headers: React.FC = () => {
             </Select>
           </Box> */}
           <Box display="flex" alignItems="center">
-            {accountAddress ? <Button className={classes.buttonStyle}>
-              {AccountStore.networkVersion[network]}
+            {accountStatus === 1 ? <Button className={classes.buttonStyle}>
+              {AccountStore.networkVersion[window.starcoin.networkVersion]}
             </Button> : null}
             <Button variant="outlined" className={classes.buttonStyle} onClick={connectWallet}>
               {accountStatus === -1 ? '安装钱包' : ''}

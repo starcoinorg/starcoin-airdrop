@@ -113,7 +113,6 @@ function getTimeDiff(end: string) {
 }
 
 async function checkStatus(data: any) {
-  console.log(data)
   const functionId = '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd'
   const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
   const args = [data.OwnerAddress, `${ data.AirdropId }`, `x\"${ data.Root.slice(2) }\"`, `${ data.Idx }u64`]
@@ -128,7 +127,6 @@ async function checkStatus(data: any) {
         },
       ],
     ).then((result: any) => {
-      console.log(result)
       if (result && Array.isArray(result) && result.length) {
         resolve(result[0])
       } else {
@@ -157,12 +155,16 @@ const Home: React.FC = () => {
         window.starcoin.on('networkChanged', handleNewNetwork)
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
     }
   }, [])
+  useEffect(() => {
+    if (!(window.starcoin && window.starcoin.selectedAddress && window.starcoin.networkVersion)) {
+      return
+    }
+    setAddress(AccountStore.currentAccount)
+  }, [AccountStore.currentAccount])
 
-  console.log('**', address)
-  console.log('**', network)
   function handleNewAccounts(accounts: any) {
     if (accounts.length === 0) {
       setRows([])
@@ -186,11 +188,9 @@ const Home: React.FC = () => {
       if (!(window.starcoin && window.starcoin.selectedAddress && window.starcoin.networkVersion)) {
         return
       }
-      console.log('useEffect', 'address', address, 'network', network)
       let data = await getList(window.starcoin.selectedAddress)
       let networkVersion = window.starcoin ? window.starcoin.networkVersion : ""
-      // let address = window.starcoin & window.starcoin.selectedAddress ? window.starcoin.selectedAddress : ""
-      if (!data || !data.data || !data.data.length) {
+      if (!data || !data.data) {
         return
       }
       for (let i = 0; i < data.data.length; i++) {
@@ -256,7 +256,6 @@ const Home: React.FC = () => {
     const functionId = airdropFunctionIdMap[window.starcoin.networkVersion]
 
     const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
-    console.log('========>', record)
     const args = [record.OwnerAddress, record.AirdropId, record.Root, record.Idx, record.Amount, JSON.parse(record.Proof)]
     const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
     const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
@@ -266,7 +265,6 @@ const Home: React.FC = () => {
       scriptFunction.serialize(se)
       return hexlify(se.getBytes())
     })()
-    // console.log({ payloadInHex })
 
     const txParams = {
       data: payloadInHex,
@@ -277,7 +275,7 @@ const Home: React.FC = () => {
       getList(window.starcoin.selectedAddress)
       console.log('Status Updated Success')
     } else {
-      console.log('Status Updated fail')
+      console.error('Status Updated fail')
     }
   }
   function SuccessProgressbar(props: any) {
@@ -313,7 +311,6 @@ const Home: React.FC = () => {
 
   function CustTablebody(props: any) {
     let rows = props.rows
-    console.log(rows)
     if (rows.length > 0) {
       return (
         <TableBody>

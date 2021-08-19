@@ -5,9 +5,10 @@ interface networkMap {
 }
 
 class AccountStore {
-  isInstall: boolean =  false
+  isInstall: boolean = false
   accountList: any = []
   currentAccount: string = ''
+  currentNetworkVersion: number = 0
   accountStatus: number = 0
   networkVersion: networkMap = {
     "253": "Halley",
@@ -18,7 +19,7 @@ class AccountStore {
   }
 
   constructor() {
-    makeAutoObservable(this, {}, {autoBind: true})
+    makeAutoObservable(this, {}, { autoBind: true })
   }
 
   setIsInstall = (v: boolean) => {
@@ -30,8 +31,11 @@ class AccountStore {
   setCurrentAccount = (v: string) => {
     this.currentAccount = v
   }
-  setAccountStatus = (v:number) => {
+  setAccountStatus = (v: number) => {
     this.accountStatus = v
+  }
+  setCurrentNetworkVersion = (v: number) => {
+    this.currentNetworkVersion = v
   }
 }
 
