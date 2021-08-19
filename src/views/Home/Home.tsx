@@ -138,6 +138,7 @@ const Home: React.FC = () => {
   const [rows, setRows] = useState<any[]>([])
   const [count, setCount] = useState(0)
   const [address, setAddress] = useState("")
+  const [network, setNetwork] = useState('')
   const { AccountStore } = useStores()
   // const [as, setAs] = useState()
   let starcoinProvider: any
@@ -153,6 +154,8 @@ const Home: React.FC = () => {
   }, [])
 
   window.starcoin.on('accountsChanged', handleNewAccounts)
+  window.starcoin.on('networkChanged', handleNewNetwork)
+
   console.log('**', address)
   function handleNewAccounts(accounts: any) {
     if (accounts.length === 0) {
@@ -160,6 +163,10 @@ const Home: React.FC = () => {
     } else {
       setAddress(accounts[0])
     }
+  }
+
+  function handleNewNetwork(n: any) {
+    setNetwork(n)
   }
 
 
@@ -207,7 +214,7 @@ const Home: React.FC = () => {
       }
       setRows(data.data)
     })();
-  }, [address])
+  }, [address, network])
 
 
   async function claimAirdrop(e: any) {
