@@ -74,6 +74,8 @@ interface rowlist {
   Status: any
 }
 
+var starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
+
 const getList = async (addr: string):Promise<any> => {
   if (!addr && !window.starcoin.selectedAddress) {
     return 
@@ -108,7 +110,6 @@ async function checkStatus(data: any) {
   const functionId = '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd'
   const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
   const args = [data.OwnerAddress, `${data.AirdropId}`, `x\"${data.Root.slice(2)}\"`, `${data.Idx}u64`]
-  const starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
   const isClaimed = await new Promise((resolve, reject) => {
     return starcoinProvider.send(
       'contract.call_v2',
@@ -240,6 +241,9 @@ const Home: React.FC = () => {
     const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
     if (transactionHash) {
       getList(window.starcoin.selectedAddress)
+      console.log('Status Updated Success')
+    } else {
+      console.log('Status Updated fail')
     }
   }
   function SuccessProgressbar (props:any) {
