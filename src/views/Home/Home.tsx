@@ -355,14 +355,14 @@ const Home: React.FC = () => {
 
   return (
     <div>
-      <Box display="flex" justifyContent="space-between">
+      {/* <Box display="flex" justifyContent="space-between">
         <Typography variant="h6" align="left"> 空投列表 </Typography>
         <ButtonGroup color="primary" aria-label="outlined primary button group">
           <Button>全部</Button>
           <Button>进行中</Button>
           <Button>已经结束</Button>
         </ButtonGroup>
-      </Box>
+      </Box> */}
       {/* <Paper elevation={3}>
         <Grid justifyContent="center" container spacing={3} className={classes.paperContent}>
           <Grid item xs={4}>
@@ -401,7 +401,7 @@ const Home: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell width="30%">Coin</TableCell>
+              <TableCell width="30%">名称</TableCell>
               <TableCell width="10%">数量</TableCell>
               <TableCell width="20%">开始时间</TableCell>
               <TableCell>领取状态</TableCell>

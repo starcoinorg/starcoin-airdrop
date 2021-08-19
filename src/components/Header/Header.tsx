@@ -50,7 +50,7 @@ const Headers: React.FC = () => {
   const { AccountStore } = useStores()
   useEffect(() => {
     // console.log(window.starcoin && window.starcoin.selectedAddress,  window.starcoin.selectedAddress)
-    if (window.starcoin && window.starcoin.selectedAddress ) {
+    if (window.starcoin && window.starcoin.selectedAddress) {
       setAccountAddress(window.starcoin.selectedAddress)
       setAccountStatus(1)
     } else if (AccountStore.isInstall) {
@@ -58,12 +58,12 @@ const Headers: React.FC = () => {
     } else {
       setAccountStatus(-1)
     }
-  },[AccountStore.isInstall, AccountStore.accountStatus])
+  }, [AccountStore.isInstall, AccountStore.accountStatus])
   window.starcoin.on('accountsChanged', handleNewAccounts)
   window.starcoin.on('networkChanged', handleNewNetwork)
 
   function handleNewAccounts(accounts: any) {
-    if(accounts.length === 0 ) {
+    if (accounts.length === 0) {
       setAccountStatus(0)
       setAccountAddress("")
     } else {
@@ -84,14 +84,14 @@ const Headers: React.FC = () => {
   useEffect(() => {
     if (window.starcoin && window.starcoin.selectedAddress) {
       setAccountAddress(window.starcoin.selectedAddress)
-    } 
-  },[])
+    }
+  }, [])
   function connectWallet() {
-    if(accountStatus === 0) {
+    if (accountStatus === 0) {
       window.starcoin.request({
         method: 'stc_requestAccounts',
       }).then((res: any) => {
-        if(res.length > 0) {
+        if (res.length > 0) {
           setAccountStatus(1)
           setAccountAddress(res[0] || '')
           AccountStore.setCurrentAccount(res[0] || '')
@@ -110,24 +110,24 @@ const Headers: React.FC = () => {
             <MenuIcon />
           </IconButton> */}
           <Typography variant="h6" className={classes.title}>
-            StarCoin Airdrop
+            Starcoin 空投
           </Typography>
-          <Box display="flex" alignItems="center">
+          {/* <Box display="flex" alignItems="center">
             <TranslateIcon className={classes.iconTr}/>
             <Select defaultValue="1" className={classes.selectComp} disableUnderline IconComponent={ExpandMoreIcon}>
               <MenuItem value={1}>
                 English
               </MenuItem>
             </Select>
-          </Box>
+          </Box> */}
           <Box display="flex" alignItems="center">
-          <Button className={classes.buttonStyle}>
-            {AccountStore.networkVersion[network]}
-          </Button>
+            <Button className={classes.buttonStyle}>
+              {AccountStore.networkVersion[network]}
+            </Button>
             <Button variant="outlined" className={classes.buttonStyle} onClick={connectWallet}>
-              {accountStatus === -1 ? 'Install Wallet':''}
-              {accountStatus === 0 ? 'Connect Wallet':''}
-              {accountStatus === 1 ? accountAddress.substr(0,4) + '....' + accountAddress.substring(accountAddress.length - 4):''}
+              {accountStatus === -1 ? 'Install Wallet' : ''}
+              {accountStatus === 0 ? 'Connect Wallet' : ''}
+              {accountStatus === 1 ? accountAddress.substr(0, 4) + '....' + accountAddress.substring(accountAddress.length - 4) : ''}
             </Button>
           </Box>
         </Toolbar>
@@ -136,4 +136,4 @@ const Headers: React.FC = () => {
   );
 }
 
-export default observer(Headers) 
+export default observer(Headers)
