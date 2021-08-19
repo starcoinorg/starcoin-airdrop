@@ -173,9 +173,12 @@ const Home: React.FC = () => {
       for (let i = 0; i < data.data.length; i++) {
         let progress: number = ((new Date(data.data[i].Create).valueOf()) / ((new Date(data.data[i].Update).valueOf()))) * 100
         data.data[i]['progress'] = progress
-        if (data.data[i]['Status'] === 0) {
+        if ([0, 3].includes(data.data[i]['Status'])) {
           let r = await checkStatus(data.data[i])
           if (r) {
+            if (data.data[i]['Status'] === 3) {
+              // call api to update status =1 in db
+            }
             data.data[i]['Status'] = 1
           } else {
             data.data[i]['Status'] = 3
