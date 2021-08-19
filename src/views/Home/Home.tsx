@@ -100,11 +100,11 @@ function getTimeDiff(end: string) {
   if (daysDiff < (endTime - startTime)) {
     let days: number = Math.floor((endTime - startTime) / daysDiff)
     let hours: number = Math.floor(((endTime - startTime) - (days * daysDiff)) / 3600000)
-    return `${ days } day ${ hours } hours`
+    return `${ days }天${ hours }小时`
   } else {
     let hours: number = Math.floor((endTime - startTime) / 3600000)
     let minutes: number = Math.floor(((endTime - startTime) - (hours * 3600000)) / 60000)
-    return `${ hours } hours ${ minutes } minutes`
+    return `${ hours }小时${ minutes }分`
   }
 }
 
@@ -326,7 +326,7 @@ const Home: React.FC = () => {
                   {formatBalance(row.Amount)}
                 </TableCell>
                 <TableCell>
-                  {row.StartAt}
+                  {row.StartAt.substr(0, 16)}
                 </TableCell>
                 <TableCell>
                   {row.Status === 1 ? <SuccessProgressbar valid={row.progress} /> : ''}
