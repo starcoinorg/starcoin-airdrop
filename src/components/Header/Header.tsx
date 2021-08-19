@@ -50,19 +50,23 @@ const Headers: React.FC = () => {
   useEffect(() => {
     console.log(window.starcoin && window.starcoin.selectedAddress,  window.starcoin.selectedAddress)
     if (window.starcoin && window.starcoin.selectedAddress ) {
+      setAccountAddress(window.starcoin.selectedAddress)
       setAccountStatus(1)
     } else if (AccountStore.isInstall) {
       setAccountStatus(0)
     } else {
       setAccountStatus(-1)
     }
-  },[AccountStore.isInstall, AccountStore.accountList, AccountStore.accountStatus])
+  },[AccountStore.isInstall, AccountStore.accountStatus])
   window.starcoin.on('accountsChanged', handleNewAccounts)
 
   function handleNewAccounts(accounts: any) {
     if(accounts.length === 0 ) {
       setAccountStatus(0)
       console.log(accountStatus)
+      setAccountAddress("")
+    } else {
+      setAccountAddress(accounts[0])
     }
   }
 
@@ -72,13 +76,13 @@ const Headers: React.FC = () => {
     } 
   },[])
   function connectWallet() {
-    if(AccountStore.accountStatus === 0) {
+    if(accountStatus === 0) {
       window.starcoin.request({
         method: 'stc_requestAccounts',
       }).then((res: any) => {
         console.log('-->', res)
         if(res.length > 0) {
-          AccountStore.setAccountStatus(1)
+          setAccountStatus(1)
           setAccountAddress(res[0] || '')
           AccountStore.setCurrentAccount(res[0] || '')
         }
@@ -108,9 +112,9 @@ const Headers: React.FC = () => {
           </Box>
           <Box display="flex" alignItems="center">
             <Button variant="outlined" className={classes.buttonStyle} onClick={connectWallet}>
-              {window.starcoin.selectedAddress ? window.starcoin.selectedAddress.substr(0,4) + '....' + window.starcoin.selectedAddress.substring(window.starcoin.selectedAddress.length - 4) :'Connect Wallet ' }
-              
               {accountStatus === -1 ? 'Install Wallet':''}
+              {accountStatus === 0 ? 'Connect Wallet':''}
+              {accountStatus === 1 ? accountAddress.substr(0,4) + '....' + accountAddress.substring(accountAddress.length - 4):''}
             </Button>
           </Box>
         </Toolbar>
