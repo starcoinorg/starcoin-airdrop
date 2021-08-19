@@ -71,8 +71,8 @@ const Headers: React.FC = () => {
   }
 
   useEffect(() => {
-    if (window.starcoin && window.starcoin._state.accounts.length > 0) {
-      setAccountAddress(window.starcoin._state.accounts[0])
+    if (window.starcoin && window.starcoin.selectedAddress) {
+      setAccountAddress(window.starcoin.selectedAddress)
     } 
   },[])
   function connectWallet() {
