@@ -80,7 +80,7 @@ const getList = async (addr: string):Promise<any> => {
   }
   let data = await API.getList({
     addr: addr || window.starcoin.selectedAddress,
-    // addr: "0x3f19d5422824f47e6c021978cee98f35",
+    // addr: "0xd7f20befd34b9f1ab8aeae98b82a5a51",
     networkVersion: window.starcoin.networkVersion
   })
   return data
@@ -92,10 +92,6 @@ function getTimeDiff(end: string) {
   if (endTime <= startTime) {
     return 'Finished'
   }
-  console.log(startTime)
-  console.log(end)
-  console.log(endTime - startTime)
-  console.log(1000 * 3600 * 24)
   let daysDiff:number = 1000 * 3600 * 24
   if(daysDiff < (endTime - startTime)) {
     let days:number = Math.floor((endTime - startTime) / daysDiff)
@@ -138,6 +134,7 @@ const Home: React.FC = () => {
   const classes = useStyles();
   const [rows, setRows] = useState<any[]>([])
   const [count, setCount] = useState(0)
+  const [address, setAddress] = useState("") 
   const { AccountStore } = useStores()
   // const [as, setAs] = useState()
   let starcoinProvider: any
@@ -145,16 +142,27 @@ const Home: React.FC = () => {
     try {
       if (window.starcoin) {
         starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
-        // setAs(starcoinProvider)
+        setAddress(window.starcoin.selectedAddress)
       }
     } catch (err) {
       console.log(err)
     }
   },[])
 
+  window.starcoin.on('accountsChanged', handleNewAccounts)
+  console.log('**', address)
+  function handleNewAccounts(accounts: any) {
+    if(accounts.length === 0 ) {
+      setRows([])
+    } else {
+      setAddress(accounts[0])
+    }
+  }
+
+
   useEffect(() => {
     (async() => {
-      let data = await getList(AccountStore.accountList[0])
+      let data = await getList(window.starcoin.selectedAddress)
       let networkVersion = window.starcoin ? window.starcoin.networkVersion : ""
       let address = window.starcoin & window.starcoin.selectedAddress ? window.starcoin.selectedAddress : ""
       // let address = "0xd7f20befd34b9f1ab8aeae98b82a5a51"
@@ -171,7 +179,7 @@ const Home: React.FC = () => {
           } else {
             data.data[i]['Status'] = 3
           }
-          let timeDiff = getTimeDiff(data.data[i].UpdateAt)
+          let timeDiff = getTimeDiff(data.data[i].EndAt)
           if (timeDiff === 'Finished') {
             data.data[i]['Status'] = 2
           } else {
@@ -188,7 +196,7 @@ const Home: React.FC = () => {
       }
       setRows(data.data)
     })();
-  },[AccountStore.accountList])
+  },[address])
 
 
   async function claimAirdrop(e:any) {
@@ -230,7 +238,9 @@ const Home: React.FC = () => {
     }
 
     const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
-    console.log(transactionHash)
+    if (transactionHash) {
+      getList(window.starcoin.selectedAddress)
+    }
   }
   function SuccessProgressbar (props:any) {
     let valid = props.valid
@@ -244,7 +254,6 @@ const Home: React.FC = () => {
   function InProgressbar (props: any) {
     let valid = props.valid
     let timeDiff = props.timeDiff
-    console.log(props)
     return (
     <Box display="flex" alignItems="center">
       <LinearProgress className={classes.inProgress} variant="determinate" style={{ flexGrow: 1, marginRight:'0.5rem'}}  value={valid}></LinearProgress>
@@ -262,6 +271,55 @@ const Home: React.FC = () => {
         <CancelRoundedIcon className={classes.endProgressBtn} />
       </Box>
     )
+  }
+
+  function CustTablebody(props: any) {
+    let rows = props.rows
+    if (rows.length > 0) {
+      return (
+        <TableBody>
+          {
+            rows.map((row: rowlist) => (
+              <TableRow key={row.Id}><TableCell>
+                  <Box display="flex" alignItems="center">
+                    <Box>
+                      <img alt="stc" className={classes.tokenIcon} src="/img/token.png" />
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle2">STC</Typography>
+                      <Typography className={classes.textNotes}>参与投票获得空投奖励</Typography>
+                    </Box>
+                  </Box>
+                </TableCell>
+                <TableCell>
+                  {row.Amount}
+                </TableCell>
+                <TableCell>
+                  {row.StartAt}
+                </TableCell>
+                <TableCell>
+                  { row.Status === 1 ? <SuccessProgressbar valid={row.progress}  /> : ''}
+                  { row.Status === 3 ? <InProgressbar valid={row.progress} timeDiff={row.timediff} /> : ''}
+                  { row.Status === 2 ? <EndProgressbar valid={row.progress}  /> : ''}
+                </TableCell>
+                <TableCell>
+                  { row.Status === 2 ? <Button variant="contained" disabled>已过期</Button> : ''}
+                  { row.Status === 3 ? <Button variant="contained" color="primary" onClick={claimAirdrop}>领取空投</Button> : ''}
+                  { row.Status === 1 ? <Button variant="contained" color="secondary">已领取</Button> : ''}
+                  { row.Status === 0 ? <Button variant="contained" disabled>状态获取中</Button> : ''}
+                </TableCell>
+              </TableRow>
+            ))
+          }
+        </TableBody>
+      )
+    } else {
+      return (
+        <Box>
+          暂无数据
+        </Box>
+      )
+    }
   }
 
   return (
@@ -320,39 +378,7 @@ const Home: React.FC = () => {
             </TableRow>
           </TableHead>
           
-          <TableBody>
-            {rows.map((row: rowlist) => (
-              <TableRow key={row.Id}><TableCell>
-                  <Box display="flex" alignItems="center">
-                    <Box>
-                      <img alt="stc" className={classes.tokenIcon} src="/img/token.png" />
-                    </Box>
-                    <Box>
-                      <Typography variant="subtitle2">STC</Typography>
-                      <Typography className={classes.textNotes}>参与投票获得空投奖励</Typography>
-                    </Box>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  {row.Amount}
-                </TableCell>
-                <TableCell>
-                  {row.StartAt}
-                </TableCell>
-                <TableCell>
-                  { row.Status === 1 ? <SuccessProgressbar valid={row.progress}  /> : ''}
-                  { row.Status === 3 ? <InProgressbar valid={row.progress} timeDiff={row.timediff} /> : ''}
-                  { row.Status === 2 ? <EndProgressbar valid={row.progress}  /> : ''}
-                </TableCell>
-                <TableCell>
-                  { row.Status === 2 ? <Button variant="contained" disabled>已过期</Button> : ''}
-                  { row.Status === 3 ? <Button variant="contained" color="primary" onClick={claimAirdrop}>领取空投</Button> : ''}
-                  { row.Status === 1 ? <Button variant="contained" color="secondary">已领取</Button> : ''}
-                  { row.Status === 0 ? <Button variant="contained" disabled>状态获取中</Button> : ''}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody> 
+          <CustTablebody rows={rows}/>
         </Table>
       </TableContainer>
       <Grid container justifyContent="flex-end">

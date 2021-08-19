@@ -48,7 +48,7 @@ const Headers: React.FC = () => {
   const [accountAddress, setAccountAddress] = useState('')
   const { AccountStore } = useStores()
   useEffect(() => {
-    console.log(window.starcoin && window.starcoin.selectedAddress,  window.starcoin.selectedAddress)
+    // console.log(window.starcoin && window.starcoin.selectedAddress,  window.starcoin.selectedAddress)
     if (window.starcoin && window.starcoin.selectedAddress ) {
       setAccountAddress(window.starcoin.selectedAddress)
       setAccountStatus(1)
@@ -63,7 +63,6 @@ const Headers: React.FC = () => {
   function handleNewAccounts(accounts: any) {
     if(accounts.length === 0 ) {
       setAccountStatus(0)
-      console.log(accountStatus)
       setAccountAddress("")
     } else {
       setAccountAddress(accounts[0])
@@ -80,7 +79,6 @@ const Headers: React.FC = () => {
       window.starcoin.request({
         method: 'stc_requestAccounts',
       }).then((res: any) => {
-        console.log('-->', res)
         if(res.length > 0) {
           setAccountStatus(1)
           setAccountAddress(res[0] || '')
