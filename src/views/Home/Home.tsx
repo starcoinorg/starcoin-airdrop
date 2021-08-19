@@ -107,9 +107,11 @@ function getTimeDiff(end: string) {
 }
 
 async function checkStatus(data: any) {
+  console.log(data)
   const functionId = '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd'
   const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
   const args = [data.OwnerAddress, `${data.AirdropId}`, `x\"${data.Root.slice(2)}\"`, `${data.Idx}u64`]
+  console.log(args)
   const isClaimed = await new Promise((resolve, reject) => {
     return starcoinProvider.send(
       'contract.call_v2',
@@ -121,6 +123,7 @@ async function checkStatus(data: any) {
         },
       ],
     ).then((result) => {
+      console.log(result)
       if (result && Array.isArray(result) && result.length) {
           resolve(result[0])
       } else {

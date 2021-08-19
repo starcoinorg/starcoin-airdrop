@@ -46,6 +46,7 @@ const Headers: React.FC = () => {
   const classes = useStyles();
   const [accountStatus, setAccountStatus] = useState(-1)
   const [accountAddress, setAccountAddress] = useState('')
+  const [network, setNetwork] = useState('')
   const { AccountStore } = useStores()
   useEffect(() => {
     // console.log(window.starcoin && window.starcoin.selectedAddress,  window.starcoin.selectedAddress)
@@ -59,6 +60,7 @@ const Headers: React.FC = () => {
     }
   },[AccountStore.isInstall, AccountStore.accountStatus])
   window.starcoin.on('accountsChanged', handleNewAccounts)
+  window.starcoin.on('networkChanged', handleNewNetwork)
 
   function handleNewAccounts(accounts: any) {
     if(accounts.length === 0 ) {
@@ -68,6 +70,16 @@ const Headers: React.FC = () => {
       setAccountAddress(accounts[0])
     }
   }
+
+  function handleNewNetwork(netwrok: any) {
+    setNetwork(network)
+  }
+
+  useEffect(() => {
+    setNetwork(window.starcoin.networkVersion)
+  })
+
+
 
   useEffect(() => {
     if (window.starcoin && window.starcoin.selectedAddress) {
@@ -109,6 +121,9 @@ const Headers: React.FC = () => {
             </Select>
           </Box>
           <Box display="flex" alignItems="center">
+          <Button className={classes.buttonStyle}>
+            {AccountStore.networkVersion[network]}
+          </Button>
             <Button variant="outlined" className={classes.buttonStyle} onClick={connectWallet}>
               {accountStatus === -1 ? 'Install Wallet':''}
               {accountStatus === 0 ? 'Connect Wallet':''}
