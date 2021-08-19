@@ -126,9 +126,9 @@ const Headers: React.FC = () => {
             </Select>
           </Box> */}
           <Box display="flex" alignItems="center">
-            <Button className={classes.buttonStyle}>
+            {accountAddress ? <Button className={classes.buttonStyle}>
               {AccountStore.networkVersion[network]}
-            </Button>
+            </Button> : null}
             <Button variant="outlined" className={classes.buttonStyle} onClick={connectWallet}>
               {accountStatus === -1 ? '安装钱包' : ''}
               {accountStatus === 0 ? '连接钱包' : ''}
