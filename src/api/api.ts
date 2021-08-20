@@ -1,20 +1,21 @@
 import Server from './server'
 
+const apiUrl = process.env.REACT_APP_STARCOIN_AIRDROP_API_URL;
 class API extends Server {
-  async getList(params = {}):Promise<any> {
+  async getList(params = {}): Promise<any> {
     try {
       let rlt = await this.axios(
         "get",
-        'http://localhost:1323/getlist',
+        `${ apiUrl }/getlist`,
         params,
       )
       if (rlt) {
-        return rlt    
+        return rlt
       } else {
         let err = {
           tip: 'Fail to get tList',
           data: params,
-          url: 'http://localhost:1323/getList',
+          url: `${ apiUrl }/getlist`,
         }
         throw err
       }
@@ -22,20 +23,20 @@ class API extends Server {
       throw err
     }
   }
-  async updateStats(params = {}):Promise<any> {
+  async updateStats(params = {}): Promise<any> {
     try {
       let rlt = await this.axios(
         "get",
-        'http://localhost:1323/updatestatus',
+        `${ apiUrl }/updatestatus`,
         params,
       )
       if (rlt) {
-        return rlt    
+        return rlt
       } else {
         let err = {
           tip: 'Fail to get tList',
           data: params,
-          url: 'http://localhost:1323/updatestatus',
+          url: `${ apiUrl }/updatestatus`,
         }
         throw err
       }
@@ -44,17 +45,17 @@ class API extends Server {
     }
   }
   async upload(file: any) {
-      let formData = new FormData()
-      formData.append('file', file)
-      let rlt = await this.axios(
-        "POST",
-        'http://localhost:1323/uploadProject',
-        formData,
-        {
-          "Content-Type": "multipart/form-data",
-        }
-      )
-      return rlt
+    let formData = new FormData()
+    formData.append('file', file)
+    let rlt = await this.axios(
+      "POST",
+      `${ apiUrl }/uploadProject`,
+      formData,
+      {
+        "Content-Type": "multipart/form-data",
+      }
+    )
+    return rlt
   }
 }
 
