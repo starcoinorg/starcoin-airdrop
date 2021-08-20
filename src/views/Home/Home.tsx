@@ -234,8 +234,8 @@ const Home: React.FC = () => {
   }, [address, network])
 
 
-  async function claimAirdrop(e: any) {
-    let record = rows[e.button]
+  async function claimAirdrop(Id: number) {
+    const record = rows.find(o => o.Id === Id)
     starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
     const airdropFunctionIdMap: any = {
       '1': '', // main
@@ -340,7 +340,7 @@ const Home: React.FC = () => {
                 </TableCell>
                 <TableCell>
                   {row.Status === 2 ? <Button variant="contained" disabled>已过期</Button> : ''}
-                  {row.Status === 3 ? <Button variant="contained" color="primary" onClick={claimAirdrop}>领取空投</Button> : ''}
+                  {row.Status === 3 ? <Button variant="contained" color="primary" onClick={() => claimAirdrop(row.Id)}>领取空投</Button> : ''}
                   {row.Status === 1 ? <Button variant="contained" color="secondary">已领取</Button> : ''}
                   {row.Status === 0 ? <Button variant="contained" disabled>状态获取中</Button> : ''}
                 </TableCell>
