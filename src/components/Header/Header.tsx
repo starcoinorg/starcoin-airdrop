@@ -103,7 +103,7 @@ const Headers: React.FC = () => {
           AccountStore.setCurrentAccount(res[0] || '')
         }
       })
-    } else if (AccountStore.accountStatus === -1) {
+    } else if (accountStatus === -1) {
       window.open("https://chrome.google.com/webstore/detail/starmask/mfhbebgoclkghebffdldpobeajmbecfk")
     }
   }
