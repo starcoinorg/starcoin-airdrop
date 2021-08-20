@@ -238,9 +238,9 @@ const Home: React.FC = () => {
     const record = rows.find(o => o.Id === Id)
     starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
     const airdropFunctionIdMap: any = {
-      '1': '', // main
+      '1': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // main
       '2': '', // proxima
-      '251': '0xf8af03dd08de49d81e4efd9e24c039cc::MerkleDistributorScript::claim_script', // barnard
+      '251': '', // barnard
       '253': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // halley
       '254': '', // localhost
     }
@@ -254,7 +254,10 @@ const Home: React.FC = () => {
     }
 
     const functionId = airdropFunctionIdMap[window.starcoin.networkVersion]
-
+    if (!functionId) {
+      window.alert('当前网络没有部署领取空投合约，请切换再重试!')
+      return false;
+    }
     const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
     const args = [record.OwnerAddress, record.AirdropId, record.Root, record.Idx, record.Amount, JSON.parse(record.Proof)]
     const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
