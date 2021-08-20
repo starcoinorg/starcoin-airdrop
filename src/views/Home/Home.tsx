@@ -55,8 +55,8 @@ const useStyles = makeStyles((theme) => ({
   tokenIcon: {
     width: '40px',
     height: '40px',
-    borderRadius: '50%',
-    marginRight: '0.3rem'
+    marginTop: '0.1rem',
+    marginRight: '0.35rem'
   },
   textNotes: {
     fontSize: '12px'
