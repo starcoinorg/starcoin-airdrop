@@ -322,7 +322,6 @@ const Home: React.FC = () => {
     let rows = props.rows
     if (rows.length > 0) {
       return (
-        
           rows.map((row: any) => <Paper className={classes.pageContainer} elevation={2}>
           <Grid container>
             <Grid item xs={2}>
@@ -370,22 +369,16 @@ const Home: React.FC = () => {
       )
     } else {
       return (
-        <TableBody>
-          <TableRow>
-            <TableCell colSpan={5} align="center">
-              <Box>
-                暂无数据
-              </Box>
-            </TableCell>
-          </TableRow>
-        </TableBody>
+        <Paper className={classes.pageContainer} elevation={2}>
+          <Typography align="center">暂无数据</Typography>
+        </Paper>
       )
     }
   }
 
   return (
     <div>
-      {rows.length > 1 ? <CustTablebody rows={rows} /> : ''} 
+      <CustTablebody rows={rows} />
       
       <Grid container justifyContent="flex-end">
         <Pagination count={count / 10 + 1} />

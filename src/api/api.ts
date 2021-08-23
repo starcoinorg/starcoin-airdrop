@@ -1,6 +1,7 @@
 import Server from './server'
 
 const apiUrl = process.env.REACT_APP_STARCOIN_AIRDROP_API_URL;
+
 class API extends Server {
   async getList(params = {}): Promise<any> {
     try {
