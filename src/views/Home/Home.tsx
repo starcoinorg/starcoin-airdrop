@@ -13,6 +13,9 @@ import { observer } from 'mobx-react';
 import BigNumber from 'bignumber.js';
 
 const useStyles = makeStyles((theme) => ({
+  shape: {
+    borderRadius: '1.5rem',
+  },
   paperContent: {
     padding: '1.5rem 0'
   },
@@ -312,7 +315,7 @@ const Home: React.FC = () => {
     let total = props.total
     return (
       <Box display="flex" alignItems="center">
-        <LinearProgress className={classes.endProgress} variant="determinate" style={{ flexGrow: 1, marginRight: '0.5rem' }}  value={(valid / total) * 100}></LinearProgress>
+        <LinearProgress className={classes.endProgress} variant="determinate" style={{ flexGrow: 1, marginRight: '0.5rem' }} value={(valid / total) * 100}></LinearProgress>
         <CancelRoundedIcon className={classes.endProgressBtn} />
       </Box>
     )
@@ -322,50 +325,50 @@ const Home: React.FC = () => {
     let rows = props.rows
     if (rows.length > 0) {
       return (
-          rows.map((row: any) => <Paper className={classes.pageContainer} elevation={2}>
+        rows.map((row: any) => <Paper className={classes.pageContainer} elevation={2}>
           <Grid container>
-            <Grid item xs={2}>
+            <Grid item xs={4}>
               <Box display="flex" alignItems="center">
-              <Box>
-                <img alt="stc" className={classes.tokenIcon} src="/img/token.png" />
+                <Box>
+                  <img alt="stc" className={classes.tokenIcon} src="/img/token.png" />
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2">STC</Typography>
+                  <Typography className={classes.textNotes}>{row.Name}</Typography>
+                </Box>
               </Box>
-              <Box>
-                <Typography variant="subtitle2">STC</Typography>
-                <Typography className={classes.textNotes}>{row.Name}</Typography>
-              </Box>
-            </Box>
             </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={2}>
               <Box>
                 <Typography variant="subtitle2">数量</Typography>
-                  <Typography className={classes.textNotes}>{formatBalance(row.Amount)}</Typography>
+                <Typography className={classes.textNotes}>{formatBalance(row.Amount)}</Typography>
               </Box>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={2}>
               <Box>
                 <Typography variant="subtitle2">开始时间</Typography>
-                  <Typography className={classes.textNotes}>{row.StartAt.substr(0, 16)}</Typography>
+                <Typography className={classes.textNotes}>{row.StartAt.substr(0, 16)}</Typography>
               </Box>
             </Grid>
-            <Grid xs={3} container direction="row" justifyContent="center" alignItems="center">
+            <Grid xs={2} container direction="row" justifyContent="center" alignItems="center">
               <Grid xs item>
-              {row.Status === 1 ? <SuccessProgressbar valid={row.progress} /> : ''}
-                  {row.Status === 3 ? <InProgressbar valid={row.progress} timeDiff={row.timediff} /> : ''}
-                  {row.Status === 2 ? <EndProgressbar valid={row.progress} /> : ''}
+                {row.Status === 1 ? <SuccessProgressbar valid={row.progress} /> : ''}
+                {row.Status === 3 ? <InProgressbar valid={row.progress} timeDiff={row.timediff} /> : ''}
+                {row.Status === 2 ? <EndProgressbar valid={row.progress} /> : ''}
               </Grid>
-                
+
             </Grid>
-            <Grid container xs={3}  direction="row" justifyContent="center" alignItems="center">
+            <Grid container xs={2} direction="row" justifyContent="center" alignItems="center">
               <Box>
-                {row.Status === 2 ? <Button variant="contained" disabled>已过期</Button> : ''}
-                {row.Status === 3 ? <Button variant="contained" color="primary" onClick={() => claimAirdrop(row.Id)}>领取空投</Button> : ''}
-                {row.Status === 1 ? <Button variant="contained" color="secondary">已领取</Button> : ''}
-                {row.Status === 0 ? <Button variant="contained" disabled>状态获取中</Button> : ''}
+                {row.Status === 2 ? <Button className={classes.shape} variant="contained" disabled>已过期</Button> : ''}
+                {row.Status === 3 ? <Button className={classes.shape} variant="contained" color="primary" onClick={() => claimAirdrop(row.Id)}>领取空投</Button> : ''}
+                {row.Status === 1 ? <Button className={classes.shape} variant="contained" color="secondary">已领取</Button> : ''}
+                {row.Status === 0 ? <Button className={classes.shape} variant="contained" disabled>状态获取中</Button> : ''}
               </Box>
             </Grid>
           </Grid>
-        </Paper> 
-          )
+        </Paper>
+        )
       )
     } else {
       return (

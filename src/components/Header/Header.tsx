@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+    color: '#000'
   },
   iconTr: {
     marginRight: '0.3rem'
@@ -129,9 +130,10 @@ const Headers: React.FC = () => {
           {/* <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
             <MenuIcon />
           </IconButton> */}
-          <Box className={classes.title}>
-          <img className={classes.logo} alt="logo" src="./img/logo.png" /> 
-          </Box>
+          <Typography variant="h6" className={classes.title}>
+            Starcoin 空投
+          </Typography>
+
           {/* <Box display="flex" alignItems="center">
             <TranslateIcon className={classes.iconTr}/>
             <Select defaultValue="1" className={classes.selectComp} disableUnderline IconComponent={ExpandMoreIcon}>
