@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
+  appbar: {
+    backgroundColor: '#ffffff',
+  },
   menuButton: {
     marginRight: theme.spacing(2),
   },
@@ -26,19 +29,31 @@ const useStyles = makeStyles((theme) => ({
     marginRight: '0.3rem'
   },
   selectComp: {
-    color: '#ffffff',
+    color: '#1C4BDE',
     marginRight: '0.5rem',
     '& .MuiSelect-select': {
       paddingRight: '28px'
     },
     '& .MuiSelect-icon': {
       top: '3px',
-      color: '#ffffff'
+      color: '#1C4BDE'
     }
   },
   buttonStyle: {
-    color: '#ffffff',
-    borderColor: '#ffffff'
+    color: '#1C4BDE',
+    borderColor: '#1C4BDE',
+    borderRadius: '25px',
+    marginRight: '0.3rem'
+  },
+  darkBgButton: {
+    color: '#000',
+    backgroundColor: '#F7F9FA',
+    borderRadius: '25px',
+    marginRight: '0.3rem'
+  },
+  logo: {
+    width: '195px',
+    height: '40px'
   }
 }));
 
@@ -109,14 +124,14 @@ const Headers: React.FC = () => {
   }
   return (
     <div className={classes.root}>
-      <AppBar position="static">
+      <AppBar position="static" className={classes.appbar}>
         <Toolbar>
           {/* <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
             <MenuIcon />
           </IconButton> */}
-          <Typography variant="h6" className={classes.title}>
-            Starcoin 空投
-          </Typography>
+          <Box className={classes.title}>
+          <img className={classes.logo} alt="logo" src="./img/logo.png" /> 
+          </Box>
           {/* <Box display="flex" alignItems="center">
             <TranslateIcon className={classes.iconTr}/>
             <Select defaultValue="1" className={classes.selectComp} disableUnderline IconComponent={ExpandMoreIcon}>
@@ -126,7 +141,7 @@ const Headers: React.FC = () => {
             </Select>
           </Box> */}
           <Box display="flex" alignItems="center">
-            {accountStatus === 1 ? <Button className={classes.buttonStyle}>
+            {accountStatus === 1 ? <Button variant="outlined" className={classes.darkBgButton}>
               {AccountStore.networkVersion[window.starcoin.networkVersion]}
             </Button> : null}
             <Button variant="outlined" className={classes.buttonStyle} onClick={connectWallet}>
