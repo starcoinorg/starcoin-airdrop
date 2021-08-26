@@ -206,6 +206,7 @@ const Home: React.FC = () => {
         let end = new Date(data.data[i].EndAt).valueOf()
         let progress: number = ((n - s) / (end - s)) * 100
         data.data[i]['progress'] = progress
+        //status: 0-default, 1-已领取, 2-结束, 3-未领取
         if ([0, 3].includes(data.data[i]['Status'])) {
           let r = await checkStatus(data.data[i])
           if (r) {
@@ -382,7 +383,7 @@ const Home: React.FC = () => {
   return (
     <div>
       <CustTablebody rows={rows} />
-      
+
       <Grid container justifyContent="flex-end">
         <Pagination count={count / 10 + 1} />
       </Grid>
