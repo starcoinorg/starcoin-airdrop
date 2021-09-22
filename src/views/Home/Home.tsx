@@ -139,6 +139,10 @@ async function checkStatus(data: any) {
       } else {
         reject(new Error('fetch failed'))
       }
+    }).catch((error: any) => {
+      // if an airdrop is revoked, it is not exists on the chain any more.
+      // this call_v2 will be failed with message: status ABORTED of type Execution with sub status 1279
+      resolve(0)
     })
   });
   return isClaimed
