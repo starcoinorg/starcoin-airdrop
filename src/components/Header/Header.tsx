@@ -161,8 +161,8 @@ const Headers: React.FC = () => {
               {AccountStore.networkVersion[window.starcoin.networkVersion]}
             </Button> : null}
             <Button variant="outlined" className={classes.buttonStyle} onClick={connectWallet}>
-              {accountStatus === -1 ? '安装钱包' : ''}
-              {accountStatus === 0 ? '连接钱包' : ''}
+              {accountStatus === -1 ? t('airdrop.installWallet') : ''}
+              {accountStatus === 0 ? t('airdrop.connectWallet') : ''}
               {accountStatus === 1 ? accountAddress.substr(0, 4) + '....' + accountAddress.substring(accountAddress.length - 4) : ''}
             </Button>
           </Box>

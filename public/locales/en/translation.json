@@ -7,6 +7,8 @@
     "claim": "Claim Airdrop",
     "claimed": "Airdrop Claimed",
     "getStatus": "Getting Status...",
+    "installWallet": "Install Wallet",
+    "connectWallet": "Connect Wallet",
     "noData": "No Data",
     "": ""
   }

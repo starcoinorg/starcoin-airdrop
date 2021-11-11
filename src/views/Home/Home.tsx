@@ -17,6 +17,11 @@ const useStyles = makeStyles((theme) => ({
   shape: {
     borderRadius: '1.5rem',
   },
+  disabledButton: {
+   color: 'rgb(140, 149, 159)',
+   backgroundColor: 'rgb(246, 248, 250)',
+   border: '1px solid rgba(27, 31, 36, 0.15)'
+  },
   paperContent: {
     padding: '1.5rem 0'
   },
@@ -250,7 +255,6 @@ const Home: React.FC = () => {
 
   async function claimAirdrop(Id: number) {
     const record = rows.find(o => o.Id === Id)
-    console.log({ record })
     starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
     const airdropFunctionIdMap: any = {
       '1': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // main
@@ -275,7 +279,6 @@ const Home: React.FC = () => {
     }
     const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
     const args = [record.OwnerAddress, record.AirdropId, record.Root, record.Idx, record.Amount, JSON.parse(record.Proof)]
-    console.log({ args })
     const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
     const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
 
@@ -293,8 +296,12 @@ const Home: React.FC = () => {
     if (transactionHash) {
       getList(window.starcoin.selectedAddress)
       console.log('Status Updated Success')
+      // this.forceUpdate();
+      window.location.reload(false);
     } else {
       console.error('Status Updated fail')
+      // this.forceUpdate();
+      window.location.reload(false);
     }
   }
   function SuccessProgressbar(props: any) {
@@ -330,7 +337,6 @@ const Home: React.FC = () => {
 
   function CustTablebody(props: any) {
     let rows = props.rows
-    console.log({rows})
     if (rows.length > 0) {
       return (
         rows.map((row: any) => <Paper className={classes.pageContainer} elevation={2}>
@@ -370,7 +376,7 @@ const Home: React.FC = () => {
               <Box>
                 {row.Status === 2 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.expired')}</Button> : ''}
                 {row.Status === 3 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" color="primary" onClick={() => claimAirdrop(row.Id)}>{t('airdrop.claim')}</Button> : ''}
-                {row.Status === 1 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" color="secondary">{t('airdrop.claimed')}</Button> : ''}
+                {row.Status === 1 ? <Button className={`${classes.shape} ${classes.disabledButton}`} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.claimed')}</Button> : ''}
                 {row.Status === 0 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.getStatus')}</Button> : ''}
               </Box>
             </Grid>
