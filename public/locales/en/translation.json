@@ -1,0 +1,13 @@
+{
+  "airdrop": {
+    "title": "Starcoin Airdrop",
+    "amount": "Amount",
+    "startTime": "Start Time",
+    "expired": "Expired",
+    "claim": "Claim Airdrop",
+    "claimed": "Airdrop Claimed",
+    "getStatus": "Getting Status...",
+    "noData": "No Data",
+    "": ""
+  }
+}
