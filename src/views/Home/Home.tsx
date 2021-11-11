@@ -11,6 +11,7 @@ import { hexlify } from '@ethersproject/bytes'
 import { useStores } from '../../useStore'
 import { observer } from 'mobx-react';
 import BigNumber from 'bignumber.js';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   shape: {
@@ -149,6 +150,7 @@ async function checkStatus(data: any) {
 }
 
 const Home: React.FC = () => {
+  const {t, i18n } = useTranslation();
   const classes = useStyles();
   const [rows, setRows] = useState<any[]>([])
   const [count, setCount] = useState(0)
@@ -328,6 +330,7 @@ const Home: React.FC = () => {
 
   function CustTablebody(props: any) {
     let rows = props.rows
+    console.log({rows})
     if (rows.length > 0) {
       return (
         rows.map((row: any) => <Paper className={classes.pageContainer} elevation={2}>
@@ -345,13 +348,13 @@ const Home: React.FC = () => {
             </Grid>
             <Grid item xs={2}>
               <Box>
-                <Typography variant="subtitle2">数量</Typography>
+                <Typography variant="subtitle2">{t('airdrop.amount')}</Typography>
                 <Typography className={classes.textNotes}>{formatBalance(row.Amount)}</Typography>
               </Box>
             </Grid>
             <Grid item xs={2}>
               <Box>
-                <Typography variant="subtitle2">开始时间</Typography>
+                <Typography variant="subtitle2">{t('airdrop.startTime')}</Typography>
                 <Typography className={classes.textNotes}>{row.StartAt.substr(0, 16)}</Typography>
               </Box>
             </Grid>
@@ -365,10 +368,10 @@ const Home: React.FC = () => {
             </Grid>
             <Grid container xs={2} direction="row" justifyContent="center" alignItems="center">
               <Box>
-                {row.Status === 2 ? <Button className={classes.shape} variant="contained" disabled>已过期</Button> : ''}
-                {row.Status === 3 ? <Button className={classes.shape} variant="contained" color="primary" onClick={() => claimAirdrop(row.Id)}>领取空投</Button> : ''}
-                {row.Status === 1 ? <Button className={classes.shape} variant="contained" color="secondary">已领取</Button> : ''}
-                {row.Status === 0 ? <Button className={classes.shape} variant="contained" disabled>状态获取中</Button> : ''}
+                {row.Status === 2 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.expired')}</Button> : ''}
+                {row.Status === 3 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" color="primary" onClick={() => claimAirdrop(row.Id)}>{t('airdrop.claim')}</Button> : ''}
+                {row.Status === 1 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" color="secondary">{t('airdrop.claimed')}</Button> : ''}
+                {row.Status === 0 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.getStatus')}</Button> : ''}
               </Box>
             </Grid>
           </Grid>
@@ -378,11 +381,12 @@ const Home: React.FC = () => {
     } else {
       return (
         <Paper className={classes.pageContainer} elevation={2}>
-          <Typography align="center">暂无数据</Typography>
+          <Typography align="center">{t('airdrop.noData')}</Typography>
         </Paper>
       )
     }
   }
+
 
   return (
     <div>
