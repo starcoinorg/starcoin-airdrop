@@ -17,6 +17,11 @@ const useStyles = makeStyles((theme) => ({
   shape: {
     borderRadius: '1.5rem',
   },
+  disabledButton: {
+   color: 'rgb(140, 149, 159)',
+   backgroundColor: 'rgb(246, 248, 250)',
+   border: '1px solid rgba(27, 31, 36, 0.15)'
+  },
   paperContent: {
     padding: '1.5rem 0'
   },
@@ -370,7 +375,7 @@ const Home: React.FC = () => {
               <Box>
                 {row.Status === 2 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.expired')}</Button> : ''}
                 {row.Status === 3 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" color="primary" onClick={() => claimAirdrop(row.Id)}>{t('airdrop.claim')}</Button> : ''}
-                {row.Status === 1 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" color="secondary">{t('airdrop.claimed')}</Button> : ''}
+                {row.Status === 1 ? <Button className={`${classes.shape} ${classes.disabledButton}`} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.claimed')}</Button> : ''}
                 {row.Status === 0 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.getStatus')}</Button> : ''}
               </Box>
             </Grid>
