@@ -255,7 +255,6 @@ const Home: React.FC = () => {
 
   async function claimAirdrop(Id: number) {
     const record = rows.find(o => o.Id === Id)
-    console.log({ record })
     starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
     const airdropFunctionIdMap: any = {
       '1': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // main
@@ -280,7 +279,6 @@ const Home: React.FC = () => {
     }
     const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
     const args = [record.OwnerAddress, record.AirdropId, record.Root, record.Idx, record.Amount, JSON.parse(record.Proof)]
-    console.log({ args })
     const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
     const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
 
@@ -298,8 +296,12 @@ const Home: React.FC = () => {
     if (transactionHash) {
       getList(window.starcoin.selectedAddress)
       console.log('Status Updated Success')
+      // this.forceUpdate();
+      window.location.reload(false);
     } else {
       console.error('Status Updated fail')
+      // this.forceUpdate();
+      window.location.reload(false);
     }
   }
   function SuccessProgressbar(props: any) {
@@ -335,7 +337,6 @@ const Home: React.FC = () => {
 
   function CustTablebody(props: any) {
     let rows = props.rows
-    console.log({rows})
     if (rows.length > 0) {
       return (
         rows.map((row: any) => <Paper className={classes.pageContainer} elevation={2}>
