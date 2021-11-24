@@ -339,7 +339,7 @@ const Home: React.FC = () => {
     let rows = props.rows
     if (rows.length > 0) {
       return (
-        rows.map((row: any) => <Paper className={classes.pageContainer} elevation={2}>
+        rows.map((row:any, index:any) => <Paper key={index} className={classes.pageContainer} elevation={2}>
           <Grid container>
             <Grid item xs={4}>
               <Box display="flex" alignItems="center">
@@ -348,7 +348,12 @@ const Home: React.FC = () => {
                 </Box>
                 <Box>
                   <Typography variant="subtitle2">STC</Typography>
-                  <Typography className={classes.textNotes}>{row.Name}</Typography>
+                  <Typography className={classes.textNotes}>
+                    {
+                      i18n.language === 'zh' ?
+                      row.Name : row.NameEN
+                    }
+                  </Typography>
                 </Box>
               </Box>
             </Grid>
@@ -364,7 +369,7 @@ const Home: React.FC = () => {
                 <Typography className={classes.textNotes}>{row.StartAt.substr(0, 16)}</Typography>
               </Box>
             </Grid>
-            <Grid xs={2} container direction="row" justifyContent="center" alignItems="center">
+            <Grid item xs={2} container direction="row" justifyContent="center" alignItems="center">
               <Grid xs item>
                 {row.Status === 1 ? <SuccessProgressbar valid={row.progress} /> : ''}
                 {row.Status === 3 ? <InProgressbar valid={row.progress} timeDiff={row.timediff} /> : ''}
@@ -372,7 +377,7 @@ const Home: React.FC = () => {
               </Grid>
 
             </Grid>
-            <Grid container xs={2} direction="row" justifyContent="center" alignItems="center">
+            <Grid container item xs={2} direction="row" justifyContent="center" alignItems="center">
               <Box>
                 {row.Status === 2 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.expired')}</Button> : ''}
                 {row.Status === 3 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" color="primary" onClick={() => claimAirdrop(row.Id)}>{t('airdrop.claim')}</Button> : ''}
