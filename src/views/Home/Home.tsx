@@ -107,23 +107,7 @@ const getList = async (addr: string): Promise<any> => {
   return data
 }
 
-function getTimeDiff(end: string) {
-  let startTime: number = new Date().valueOf()
-  let endTime: number = new Date(end).valueOf()
-  if (endTime <= startTime) {
-    return 'Finished'
-  }
-  let daysDiff: number = 1000 * 3600 * 24
-  if (daysDiff < (endTime - startTime)) {
-    let days: number = Math.floor((endTime - startTime) / daysDiff)
-    let hours: number = Math.floor(((endTime - startTime) - (days * daysDiff)) / 3600000)
-    return `${ days }天${ hours }小时`
-  } else {
-    let hours: number = Math.floor((endTime - startTime) / 3600000)
-    let minutes: number = Math.floor(((endTime - startTime) - (hours * 3600000)) / 60000)
-    return `${ hours }小时${ minutes }分`
-  }
-}
+
 
 async function checkStatus(data: any) {
   const functionId = '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd'
@@ -233,12 +217,17 @@ const Home: React.FC = () => {
           } else {
             data.data[i]['Status'] = 3
           }
-          let timeDiff = getTimeDiff(data.data[i].EndAt)
-          if (timeDiff === 'Finished') {
+          // let timeDiff = getTimeDiff(data.data[i].EndAt, t)
+          let startTime: number = new Date().valueOf()
+          let endTime: number = new Date(data.data[i].EndAt).valueOf()
+          if (endTime <= startTime) {
             data.data[i]['Status'] = 2
-          } else {
-            data.data[i]['timediff'] = timeDiff
           }
+          // if (timeDiff === 'Finished') {
+          //   data.data[i]['Status'] = 2
+          // } else {
+          //   data.data[i]['timediff'] = timeDiff
+          // }
           await API.updateStats({
             networkVersion,
             address,
@@ -295,7 +284,6 @@ const Home: React.FC = () => {
     const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
     if (transactionHash) {
       getList(window.starcoin.selectedAddress)
-      console.log('Status Updated Success')
       // this.forceUpdate();
       window.location.reload(false);
     } else {
@@ -335,59 +323,79 @@ const Home: React.FC = () => {
     )
   }
 
+  function getTimeDiff(end: string) {
+    let startTime: number = new Date().valueOf()
+    let endTime: number = new Date(end).valueOf()
+    if (endTime <= startTime) {
+      return ''
+    }
+    let daysDiff: number = 1000 * 3600 * 24
+    if (daysDiff < (endTime - startTime)) {
+      let days: number = Math.floor((endTime - startTime) / daysDiff)
+      let hours: number = Math.floor(((endTime - startTime) - (days * daysDiff)) / 3600000)
+      return `${ days }${t('airdrop.day')}${ hours }${t('airdrop.hour')}`
+    } else {
+      let hours: number = Math.floor((endTime - startTime) / 3600000)
+      let minutes: number = Math.floor(((endTime - startTime) - (hours * 3600000)) / 60000)
+      return `${ hours }${t('airdrop.hour')}${ minutes }${t('airdrop.min')}`
+    }
+  }
+
   function CustTablebody(props: any) {
     let rows = props.rows
     if (rows.length > 0) {
       return (
-        rows.map((row:any, index:any) => <Paper key={index} className={classes.pageContainer} elevation={2}>
-          <Grid container>
-            <Grid item xs={4}>
-              <Box display="flex" alignItems="center">
-                <Box>
-                  <img alt="stc" className={classes.tokenIcon} src="/img/token.png" />
+        rows.map((row:any, index:any) => {
+          row.timediff = getTimeDiff(row.EndAt)
+          return <Paper key={index} className={classes.pageContainer} elevation={2}>
+            <Grid container>
+              <Grid item xs={4}>
+                <Box display="flex" alignItems="center">
+                  <Box>
+                    <img alt="stc" className={classes.tokenIcon} src="/img/token.png" />
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle2">STC</Typography>
+                    <Typography className={classes.textNotes}>
+                      {
+                        i18n.language === 'zh' ?
+                        row.Name : row.NameEN
+                      }
+                    </Typography>
+                  </Box>
                 </Box>
-                <Box>
-                  <Typography variant="subtitle2">STC</Typography>
-                  <Typography className={classes.textNotes}>
-                    {
-                      i18n.language === 'zh' ?
-                      row.Name : row.NameEN
-                    }
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
-            <Grid item xs={2}>
-              <Box>
-                <Typography variant="subtitle2">{t('airdrop.amount')}</Typography>
-                <Typography className={classes.textNotes}>{formatBalance(row.Amount)}</Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={2}>
-              <Box>
-                <Typography variant="subtitle2">{t('airdrop.startTime')}</Typography>
-                <Typography className={classes.textNotes}>{row.StartAt.substr(0, 16)}</Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={2} container direction="row" justifyContent="center" alignItems="center">
-              <Grid xs item>
-                {row.Status === 1 ? <SuccessProgressbar valid={row.progress} /> : ''}
-                {row.Status === 3 ? <InProgressbar valid={row.progress} timeDiff={row.timediff} /> : ''}
-                {row.Status === 2 ? <EndProgressbar valid={row.progress} /> : ''}
               </Grid>
+              <Grid item xs={2}>
+                <Box>
+                  <Typography variant="subtitle2">{t('airdrop.amount')}</Typography>
+                  <Typography className={classes.textNotes}>{formatBalance(row.Amount)}</Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={2}>
+                <Box>
+                  <Typography variant="subtitle2">{t('airdrop.startTime')}</Typography>
+                  <Typography className={classes.textNotes}>{row.StartAt.substr(0, 16)}</Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={2} container direction="row" justifyContent="center" alignItems="center">
+                <Grid xs item>
+                  {row.Status === 1 ? <SuccessProgressbar valid={row.progress} /> : ''}
+                  {row.Status === 3 ? <InProgressbar valid={row.progress} timeDiff={row.timediff} /> : ''}
+                  {row.Status === 2 ? <EndProgressbar valid={row.progress} /> : ''}
+                </Grid>
 
+              </Grid>
+              <Grid container item xs={2} direction="row" justifyContent="center" alignItems="center">
+                <Box>
+                  {row.Status === 2 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.expired')}</Button> : ''}
+                  {row.Status === 3 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" color="primary" onClick={() => claimAirdrop(row.Id)}>{t('airdrop.claim')}</Button> : ''}
+                  {row.Status === 1 ? <Button className={`${classes.shape} ${classes.disabledButton}`} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.claimed')}</Button> : ''}
+                  {row.Status === 0 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.getStatus')}</Button> : ''}
+                </Box>
+              </Grid>
             </Grid>
-            <Grid container item xs={2} direction="row" justifyContent="center" alignItems="center">
-              <Box>
-                {row.Status === 2 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.expired')}</Button> : ''}
-                {row.Status === 3 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" color="primary" onClick={() => claimAirdrop(row.Id)}>{t('airdrop.claim')}</Button> : ''}
-                {row.Status === 1 ? <Button className={`${classes.shape} ${classes.disabledButton}`} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.claimed')}</Button> : ''}
-                {row.Status === 0 ? <Button className={classes.shape} style={{textTransform: 'none'}} variant="contained" disabled>{t('airdrop.getStatus')}</Button> : ''}
-              </Box>
-            </Grid>
-          </Grid>
-        </Paper>
-        )
+          </Paper>
+        })
       )
     } else {
       return (

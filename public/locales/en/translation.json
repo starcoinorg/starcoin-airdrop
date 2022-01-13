@@ -10,6 +10,9 @@
     "installWallet": "Install Wallet",
     "connectWallet": "Connect Wallet",
     "noData": "No Data",
+    "day": " d ",
+    "hour": " h ",
+    "min": " m ",
     "": ""
   }
 }

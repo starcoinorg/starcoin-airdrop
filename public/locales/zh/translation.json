@@ -10,6 +10,9 @@
     "installWallet": "安装钱包",
     "connectWallet": "连接钱包",
     "noData": "暂无数据",
+    "day": "天",
+    "hour": "小时",
+    "min": "分",
     "": ""
   }
 }
