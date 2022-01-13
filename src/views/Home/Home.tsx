@@ -337,9 +337,7 @@ const Home: React.FC = () => {
 
   function CustTablebody(props: any) {
     let rows = props.rows
-    console.log(i18n.language,t('airdrop.day'))
     if (rows.length > 0) {
-      console.log(getTimeDiff(rows[0].EndAt))
       return (
         rows.map((row:any, index:any) => {
           row.timediff = getTimeDiff(row.EndAt)
