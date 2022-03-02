@@ -110,8 +110,9 @@ const getList = async (addr: string): Promise<any> => {
 
 
 async function checkStatus(data: any) {
+  console.log('checkStatus',data)
   const functionId = '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd'
-  const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
+  const tyArgs = [data.Token]
   const args = [data.OwnerAddress, `${ data.AirdropId }`, `x\"${ data.Root.slice(2) }\"`, `${ data.Idx }u64`]
   const isClaimed = await new Promise((resolve, reject) => {
     return starcoinProvider.send(
@@ -260,7 +261,7 @@ const Home: React.FC = () => {
       window.alert('当前网络没有部署领取空投合约，请切换再重试!')
       return false;
     }
-    const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
+    const tyArgs = [record.Token]
     const args = [record.OwnerAddress, record.AirdropId, record.Root, record.Idx, record.Amount, JSON.parse(record.Proof)]
     const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
     const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
@@ -362,7 +363,7 @@ const Home: React.FC = () => {
               <Grid item xs={2}>
                 <Box>
                   <Typography variant="subtitle2">{t('airdrop.amount')}</Typography>
-                  <Typography className={classes.textNotes}>{formatBalance(row.Amount)}</Typography>
+                  <Typography className={classes.textNotes}>{formatBalance(row.Amount)} {row.Symbol}</Typography>
                 </Box>
               </Grid>
               <Grid item xs={2}>
