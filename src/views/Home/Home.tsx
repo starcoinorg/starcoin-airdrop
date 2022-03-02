@@ -110,7 +110,6 @@ const getList = async (addr: string): Promise<any> => {
 
 
 async function checkStatus(data: any) {
-  console.log('checkStatus',data)
   const functionId = '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd'
   const tyArgs = [data.Token]
   const args = [data.OwnerAddress, `${ data.AirdropId }`, `x\"${ data.Root.slice(2) }\"`, `${ data.Idx }u64`]
@@ -350,7 +349,7 @@ const Home: React.FC = () => {
                     <img alt="stc" className={classes.tokenIcon} src="/img/token.png" />
                   </Box>
                   <Box>
-                    <Typography variant="subtitle2">STC</Typography>
+                    <Typography variant="subtitle2">{row.Symbol}</Typography>
                     <Typography className={classes.textNotes}>
                       {
                         i18n.language === 'zh' ?
