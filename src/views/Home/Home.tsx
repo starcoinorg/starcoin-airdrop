@@ -346,7 +346,7 @@ const Home: React.FC = () => {
               <Grid item xs={4}>
                 <Box display="flex" alignItems="center">
                   <Box>
-                    <img alt="stc" className={classes.tokenIcon} src="/img/token.png" />
+                    <img alt="stc" className={classes.tokenIcon} src="/img/stc.svg" />
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">{row.Symbol}</Typography>
