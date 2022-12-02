@@ -1,4 +1,5 @@
 import Server from './server'
+import axios from 'axios'
 
 const apiUrl = process.env.REACT_APP_STARCOIN_AIRDROP_API_URL;
 
@@ -45,16 +46,10 @@ class API extends Server {
       throw err
     }
   }
-  async upload(file: any) {
-    let formData = new FormData()
-    formData.append('file', file)
-    let rlt = await this.axios(
-      "POST",
-      `${ apiUrl }/uploadProject`,
-      formData,
-      {
-        "Content-Type": "multipart/form-data",
-      }
+  async upload(data: any):Promise<any> {
+    let rlt = await axios.post(
+        `${apiUrl}/uploadProject`,
+        data,
     )
     return rlt
   }

@@ -89,6 +89,7 @@ const Headers: React.FC = () => {
       setAccountAddress("")
     } else {
       setAccountAddress(accounts[0])
+      AccountStore.setCurrentAccount(window.starcoin.selectedAddress)
     }
   }
 
@@ -107,6 +108,7 @@ const Headers: React.FC = () => {
   useEffect(() => {
     if (window.starcoin && window.starcoin.selectedAddress) {
       setAccountAddress(window.starcoin.selectedAddress)
+      AccountStore.setCurrentAccount(window.starcoin.selectedAddress)
     }
   }, [])
 
